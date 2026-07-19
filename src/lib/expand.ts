@@ -226,7 +226,6 @@ export function expandMeets(
   meets: CommitMeet[],
   rangeStart: Date,
   rangeEnd: Date,
-  eventParseMode: EventParseMode = 'fromName',
 ): Occurrence[] {
   const results: Occurrence[] = []
 
@@ -244,7 +243,6 @@ export function expandMeets(
       [meet.city, meet.state].filter(Boolean).join(', ') ||
       null
 
-    const subTeams = parseEventTeams(name, eventParseMode)
     results.push({
       id: `meet-${meet._id}-${start.getTime()}`,
       sourceId: meet._id,
@@ -252,16 +250,10 @@ export function expandMeets(
       label: 'meet',
       start,
       end,
-      subTeams,
+      // Groups apply to practices only — meets are filtered via the Meet chip.
+      subTeams: [],
       location,
-      fields: buildMeetDetailFields(
-        meet,
-        name,
-        start,
-        end,
-        subTeams,
-        location,
-      ),
+      fields: buildMeetDetailFields(meet, name, start, end, location),
     })
   }
 

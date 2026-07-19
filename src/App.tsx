@@ -26,6 +26,7 @@ export default function App() {
   const [selected, setSelected] = useState<Set<SubTeam>>(
     () => new Set(DEFAULT_SELECTED),
   )
+  const [showMeets, setShowMeets] = useState(true)
   const [settings, setSettings] = useState<ScheduleSettings>(() =>
     getStoredSettings(),
   )
@@ -98,12 +99,7 @@ export default function App() {
       : []
 
     const meetOccurrences = settings.queryMeets
-      ? expandMeets(
-          meets,
-          week.rangeStart,
-          week.rangeEnd,
-          settings.eventParseMode,
-        )
+      ? expandMeets(meets, week.rangeStart, week.rangeEnd)
       : []
 
     return [...practices, ...teamEvents, ...meetOccurrences].sort(
@@ -111,34 +107,53 @@ export default function App() {
     )
   }, [events, meets, week, timeZone, settings])
 
+  const practiceOccurrences = useMemo(
+    () => weekOccurrences.filter((o) => o.label !== 'meet'),
+    [weekOccurrences],
+  )
+
+  const meetOccurrences = useMemo(
+    () => weekOccurrences.filter((o) => o.label === 'meet'),
+    [weekOccurrences],
+  )
+
   const availableTeams = useMemo(() => {
     const present = new Set<SubTeam>()
-    for (const occ of weekOccurrences) {
+    for (const occ of practiceOccurrences) {
       for (const t of occ.subTeams) present.add(t)
     }
     const core: SubTeam[] = ['Sr', 'Jr', 'Jr Prep', 'DEVO']
     return SUB_TEAM_ORDER.filter(
       (t) => core.includes(t) || present.has(t),
     )
-  }, [weekOccurrences])
+  }, [practiceOccurrences])
 
   const counts = useMemo(() => {
     const map: Partial<Record<SubTeam, number>> = {}
-    for (const occ of weekOccurrences) {
+    for (const occ of practiceOccurrences) {
       for (const t of occ.subTeams) {
         map[t] = (map[t] ?? 0) + 1
       }
     }
     return map
-  }, [weekOccurrences])
+  }, [practiceOccurrences])
 
-  const filtered = useMemo(
-    () =>
-      weekOccurrences.filter((o) =>
-        occurrenceMatchesTeams(o.subTeams, selected),
-      ),
-    [weekOccurrences, selected],
-  )
+  const filtered = useMemo(() => {
+    const practicesAndEvents = practiceOccurrences.filter((o) =>
+      occurrenceMatchesTeams(o.subTeams, selected),
+    )
+    const meets =
+      settings.queryMeets && showMeets ? meetOccurrences : []
+    return [...practicesAndEvents, ...meets].sort(
+      (a, b) => a.start.getTime() - b.start.getTime(),
+    )
+  }, [
+    practiceOccurrences,
+    meetOccurrences,
+    selected,
+    settings.queryMeets,
+    showMeets,
+  ])
 
   /** Phone → concise carpool-style rows for any group selection. */
   const fitMode = isMobile
@@ -180,6 +195,15 @@ export default function App() {
               selected={selected}
               onChange={setSelected}
               counts={counts}
+              meetFilter={
+                settings.queryMeets
+                  ? {
+                      count: meetOccurrences.length,
+                      selected: showMeets,
+                      onChange: setShowMeets,
+                    }
+                  : null
+              }
             />
 
             {filtered.length === 0 ? (
