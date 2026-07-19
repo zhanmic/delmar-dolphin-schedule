@@ -63,7 +63,7 @@
   align-items: center;
   justify-content: center;
   min-height: 2.5rem;
-  padding-inline: 3rem;
+  padding-inline: 3rem 7.5rem;
 }
 
 .hero__top .settings {
@@ -74,15 +74,58 @@
   z-index: 5;
 }
 
-.hero__top .theme-toggle {
+.hero__actions {
   position: absolute;
   top: 50%;
   right: 0;
   transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  z-index: 5;
+}
+
+.hero__carpool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--toggle-border);
+  border-radius: 999px;
+  background: var(--toggle-bg);
+  color: var(--toggle-fg);
+  font-size: 0.82rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.hero__carpool:hover {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--cyan) 45%, var(--toggle-border));
+  transform: translateY(-1px);
+}
+
+.hero__carpool:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.hero__top .theme-toggle {
+  position: static;
+  transform: none;
 }
 
 .hero__top .theme-toggle:hover {
-  transform: translateY(calc(-50% - 1px));
+  transform: translateY(-1px);
 }
 
 .settings__button {
@@ -1354,7 +1397,17 @@
 
   .app--fit .hero__top {
     min-height: 2.15rem;
-    padding-inline: 2.5rem;
+    padding-inline: 2.5rem 6.75rem;
+  }
+
+  .app--fit .hero__actions {
+    gap: 0.3rem;
+  }
+
+  .app--fit .hero__carpool {
+    height: 2.15rem;
+    padding: 0 0.55rem;
+    font-size: 0.72rem;
   }
 
   .app--fit .hero__brand {
