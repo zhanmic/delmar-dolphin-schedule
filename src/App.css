@@ -431,10 +431,40 @@
   gap: 0.5rem;
 }
 
+.filters__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.filters__row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.filters__row-label {
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1;
+}
+
+.filters__row-label--spacer {
+  visibility: hidden;
+  user-select: none;
+  pointer-events: none;
+}
+
 .filters__list {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .filter-chip {
@@ -1307,6 +1337,18 @@
 
   .app--fit .filters__header {
     display: none;
+  }
+
+  .app--fit .filters__rows {
+    gap: 0.4rem;
+  }
+
+  .app--fit .filters__row {
+    gap: 0.4rem;
+  }
+
+  .app--fit .filters__row-label {
+    font-size: 0.68rem;
   }
 
   .app--fit .filters__list {
