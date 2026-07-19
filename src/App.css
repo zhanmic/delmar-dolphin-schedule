@@ -613,19 +613,18 @@
 .practice-card__kind {
   display: inline-flex;
   align-items: center;
-  padding: 0.12rem 0.4rem;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  padding: 0;
   border-radius: 0.35rem;
-  font-size: 0.62rem;
-  font-weight: 750;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  line-height: 1.2;
   color: var(--ink);
   background: color-mix(in srgb, var(--muted) 22%, transparent);
+  flex-shrink: 0;
 }
 
 .practice-card--meet .practice-card__kind {
-  color: var(--ink);
+  color: var(--team-meet);
   background: color-mix(in srgb, var(--team-meet) 28%, transparent);
 }
 
@@ -757,20 +756,35 @@
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  padding: 0.08rem 0.34rem;
+  justify-content: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  padding: 0;
   border-radius: 0.3rem;
-  font-size: 0.58rem;
-  font-weight: 750;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  line-height: 1.15;
   color: var(--ink);
   background: color-mix(in srgb, var(--muted) 22%, transparent);
 }
 
 .day-session--meet .day-session__kind {
-  color: var(--ink);
+  color: var(--team-meet);
   background: color-mix(in srgb, var(--team-meet) 30%, transparent);
+}
+
+.session-kind__icon {
+  width: 0.85em;
+  height: 0.85em;
+  display: block;
+}
+
+.day-session__kind .session-kind__icon {
+  width: 0.78rem;
+  height: 0.78rem;
+}
+
+.practice-card__kind .session-kind__icon,
+.day-sheet__badge .session-kind__icon {
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
 .day-session__team {
@@ -1000,18 +1014,17 @@
 .day-sheet__badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.12rem 0.42rem;
-  border-radius: 0.35rem;
-  font-size: 0.68rem;
-  font-weight: 750;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  justify-content: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  padding: 0;
+  border-radius: 0.4rem;
   color: var(--ink);
   background: color-mix(in srgb, var(--muted) 22%, transparent);
 }
 
 .day-sheet__card--meet .day-sheet__badge {
-  color: var(--ink);
+  color: var(--team-meet);
   background: color-mix(in srgb, var(--team-meet) 30%, transparent);
 }
 
@@ -1336,8 +1349,14 @@
   }
 
   .app--fit .day-session__kind {
-    font-size: 0.52rem;
-    padding: 0.05rem 0.26rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    padding: 0;
+  }
+
+  .app--fit .day-session__kind .session-kind__icon {
+    width: 0.72rem;
+    height: 0.72rem;
   }
 
   .app--fit .day-session__team {

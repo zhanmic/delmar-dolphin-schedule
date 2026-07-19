@@ -3,6 +3,7 @@ import { SUB_TEAM_COLORS } from '../lib/groups'
 import { formatTimeRange } from '../lib/week'
 import type { Occurrence, SubTeam } from '../types'
 import type { CSSProperties } from 'react'
+import { SessionKindIcon } from './SessionKindIcon'
 
 interface Props {
   title: string
@@ -76,11 +77,8 @@ export function DayDetailSheet({
           {occurrences.map((occ) => {
             const isMeet = occ.label === 'meet'
             const team = isMeet ? 'Meet' : (occ.subTeams[0] ?? 'Other')
-            const kindLabel = isMeet
-              ? 'Meet'
-              : occ.label === 'event'
-                ? 'Event'
-                : 'Practice'
+            const kind =
+              isMeet ? 'meet' : occ.label === 'event' ? 'event' : 'practice'
             return (
               <article
                 key={occ.id}
@@ -97,7 +95,7 @@ export function DayDetailSheet({
                 }
               >
                 <div className="day-sheet__card-top">
-                  <span className="day-sheet__badge">{kindLabel}</span>
+                  <SessionKindIcon kind={kind} className="day-sheet__badge" />
                   <span className="day-sheet__card-time">
                     {formatTimeRange(occ.start, occ.end)}
                   </span>

@@ -9,6 +9,7 @@ import {
 } from '../lib/week'
 import type { Occurrence, SubTeam } from '../types'
 import { DayDetailSheet } from './DayDetailSheet'
+import { SessionKindIcon } from './SessionKindIcon'
 
 interface Props {
   week: WeekModel
@@ -138,9 +139,10 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                         .filter(Boolean)
                         .join(', ')}
                     >
-                      <span className="day-session__kind">
-                        {isMeet ? 'Meet' : 'Practice'}
-                      </span>
+                      <SessionKindIcon
+                        kind={isMeet ? 'meet' : 'practice'}
+                        className="day-session__kind"
+                      />
                       {isMeet ? (
                         <span className="day-session__name">{occ.name}</span>
                       ) : (
@@ -219,9 +221,10 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                         }
                       >
                         <div className="practice-card__meta">
-                          <span className="practice-card__kind">
-                            {isMeet ? 'Meet' : 'Practice'}
-                          </span>
+                          <SessionKindIcon
+                            kind={isMeet ? 'meet' : 'practice'}
+                            className="practice-card__kind"
+                          />
                           {!isMeet ? (
                             <span className="practice-card__team">{team}</span>
                           ) : null}
