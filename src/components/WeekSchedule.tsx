@@ -115,21 +115,34 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
 
               <div className="day-group__sessions">
                 {group.occurrences.map((occ) => {
+                  const isMeet = occ.label === 'meet'
                   const team = sessionLabel(occ)
-                  const loc = occ.location ?? (occ.label === 'meet' ? 'Meet' : 'Practice')
+                  const loc =
+                    occ.location ??
+                    (isMeet ? occ.name : 'Practice')
+                  const primary = isMeet ? 'Meet' : team
                   return (
                     <article
                       key={occ.id}
-                      className="day-session"
+                      className={`day-session day-session--${
+                        isMeet ? 'meet' : 'practice'
+                      }`}
                       style={
                         {
                           '--card-accent': sessionAccent(occ),
                         } as CSSProperties
                       }
-                      aria-label={`${team}, ${loc}, ${formatTimeRangeCompact(occ.start, occ.end)}`}
+                      aria-label={`${isMeet ? 'Meet' : 'Practice'}, ${primary}, ${loc}, ${formatTimeRangeCompact(occ.start, occ.end)}`}
                     >
                       <span className="day-session__mid">
-                        <span className="day-session__team">{team}</span>
+                        <span className="day-session__top">
+                          <span className="day-session__kind">
+                            {isMeet ? 'Meet' : 'Practice'}
+                          </span>
+                          {!isMeet ? (
+                            <span className="day-session__team">{team}</span>
+                          ) : null}
+                        </span>
                         <span className="day-session__loc">{loc}</span>
                       </span>
                       <span className="day-session__time">
@@ -187,11 +200,14 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                   <p className="day-col__empty">No practices</p>
                 ) : (
                   dayOccs.map((occ) => {
+                    const isMeet = occ.label === 'meet'
                     const team = sessionLabel(occ)
                     return (
                       <article
                         key={occ.id}
-                        className="practice-card"
+                        className={`practice-card practice-card--${
+                          isMeet ? 'meet' : 'practice'
+                        }`}
                         style={
                           {
                             '--card-accent': sessionAccent(occ),
@@ -199,7 +215,12 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                         }
                       >
                         <div className="practice-card__meta">
-                          <span className="practice-card__team">{team}</span>
+                          <span className="practice-card__kind">
+                            {isMeet ? 'Meet' : 'Practice'}
+                          </span>
+                          {!isMeet ? (
+                            <span className="practice-card__team">{team}</span>
+                          ) : null}
                           {occ.location ? (
                             <span className="practice-card__loc">
                               {occ.location}

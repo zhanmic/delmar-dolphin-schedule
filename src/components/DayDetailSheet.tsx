@@ -74,22 +74,30 @@ export function DayDetailSheet({
 
         <div className="day-sheet__body">
           {occurrences.map((occ) => {
-            const team = occ.label === 'meet' ? 'Meet' : (occ.subTeams[0] ?? 'Other')
+            const isMeet = occ.label === 'meet'
+            const team = isMeet ? 'Meet' : (occ.subTeams[0] ?? 'Other')
+            const kindLabel = isMeet
+              ? 'Meet'
+              : occ.label === 'event'
+                ? 'Event'
+                : 'Practice'
             return (
               <article
                 key={occ.id}
-                className="day-sheet__card"
+                className={`day-sheet__card day-sheet__card--${
+                  isMeet ? 'meet' : 'practice'
+                }`}
                 style={
                   {
                     '--card-accent':
-                      occ.label === 'meet'
+                      isMeet
                         ? 'var(--team-meet)'
                         : SUB_TEAM_COLORS[team as SubTeam] ?? 'var(--team-other)',
                   } as CSSProperties
                 }
               >
                 <div className="day-sheet__card-top">
-                  <span className="day-sheet__badge">{occ.label}</span>
+                  <span className="day-sheet__badge">{kindLabel}</span>
                   <span className="day-sheet__card-time">
                     {formatTimeRange(occ.start, occ.end)}
                   </span>
