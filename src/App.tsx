@@ -179,7 +179,17 @@ export default function App() {
         <div className="hero__top">
           <SettingsButton settings={settings} onChange={setSettings} />
           <h1 className="hero__brand">Delma Dolphins Schedule</h1>
-          <ThemeToggle />
+          <div className="hero__actions">
+            <a
+              className="hero__carpool"
+              href="https://swim-carpool.vercel.app"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Carpool
+            </a>
+            <ThemeToggle />
+          </div>
         </div>
         <p className="hero__sub">
           Weekly view by group — powered by the live Commit calendar API.
