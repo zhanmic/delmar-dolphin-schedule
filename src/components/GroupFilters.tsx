@@ -33,6 +33,7 @@ export function GroupFilters({
   meetFilter = null,
 }: Props) {
   const teams = SUB_TEAM_ORDER.filter((t) => available.includes(t))
+  const hasKindFilters = Boolean(eventFilter || meetFilter)
 
   function toggle(team: SubTeam) {
     const next = new Set(selected)
@@ -54,9 +55,9 @@ export function GroupFilters({
   }
 
   return (
-    <section className="filters" aria-label="Sub-team filters">
+    <section className="filters" aria-label="Schedule filters">
       <div className="filters__header">
-        <h2>Groups</h2>
+        <h2>Filters</h2>
         <div className="filters__actions">
           <button type="button" className="text-btn" onClick={selectAll}>
             All
@@ -66,74 +67,95 @@ export function GroupFilters({
           </button>
         </div>
       </div>
-      <div className="filters__list" role="group">
-        {teams.map((team) => {
-          const active = selected.has(team)
-          const count = counts[team] ?? 0
-          return (
-            <button
-              key={team}
-              type="button"
-              className={`filter-chip${active ? ' is-active' : ''}`}
-              style={{ '--chip-color': SUB_TEAM_COLORS[team] } as CSSProperties}
-              aria-pressed={active}
-              aria-label={`${team}, ${count} this week`}
-              onClick={() => toggle(team)}
-            >
-              <span className="filter-chip__dot" aria-hidden />
-              <span className="filter-chip__label">{team}</span>
-              <span
-                className="filter-chip__count"
-                aria-label={`${count} this week`}
-              >
-                {count}
-              </span>
-            </button>
-          )
-        })}
 
-        {eventFilter ? (
-          <button
-            type="button"
-            className={`filter-chip filter-chip--event${
-              eventFilter.selected ? ' is-active' : ''
-            }`}
-            style={{ '--chip-color': EVENT_COLOR } as CSSProperties}
-            aria-pressed={eventFilter.selected}
-            aria-label={`Events, ${eventFilter.count} this week`}
-            onClick={() => eventFilter.onChange(!eventFilter.selected)}
-          >
-            <span className="filter-chip__dot" aria-hidden />
-            <span className="filter-chip__label">Event</span>
-            <span
-              className="filter-chip__count"
-              aria-label={`${eventFilter.count} this week`}
-            >
-              {eventFilter.count}
-            </span>
-          </button>
-        ) : null}
+      <div className="filters__rows">
+        <div className="filters__row" role="group" aria-label="Practice groups">
+          <span className="filters__row-label">Practice</span>
+          <div className="filters__list">
+            {teams.map((team) => {
+              const active = selected.has(team)
+              const count = counts[team] ?? 0
+              return (
+                <button
+                  key={team}
+                  type="button"
+                  className={`filter-chip${active ? ' is-active' : ''}`}
+                  style={
+                    { '--chip-color': SUB_TEAM_COLORS[team] } as CSSProperties
+                  }
+                  aria-pressed={active}
+                  aria-label={`${team}, ${count} this week`}
+                  onClick={() => toggle(team)}
+                >
+                  <span className="filter-chip__dot" aria-hidden />
+                  <span className="filter-chip__label">{team}</span>
+                  <span
+                    className="filter-chip__count"
+                    aria-label={`${count} this week`}
+                  >
+                    {count}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
 
-        {meetFilter ? (
-          <button
-            type="button"
-            className={`filter-chip filter-chip--meet${
-              meetFilter.selected ? ' is-active' : ''
-            }`}
-            style={{ '--chip-color': MEET_COLOR } as CSSProperties}
-            aria-pressed={meetFilter.selected}
-            aria-label={`Meets, ${meetFilter.count} this week`}
-            onClick={() => meetFilter.onChange(!meetFilter.selected)}
+        {hasKindFilters ? (
+          <div
+            className="filters__row filters__row--kinds"
+            role="group"
+            aria-label="Events and meets"
           >
-            <span className="filter-chip__dot" aria-hidden />
-            <span className="filter-chip__label">Meet</span>
-            <span
-              className="filter-chip__count"
-              aria-label={`${meetFilter.count} this week`}
-            >
-              {meetFilter.count}
+            <span className="filters__row-label filters__row-label--spacer" aria-hidden>
+              Practice
             </span>
-          </button>
+            <div className="filters__list">
+              {eventFilter ? (
+                <button
+                  type="button"
+                  className={`filter-chip filter-chip--event${
+                    eventFilter.selected ? ' is-active' : ''
+                  }`}
+                  style={{ '--chip-color': EVENT_COLOR } as CSSProperties}
+                  aria-pressed={eventFilter.selected}
+                  aria-label={`Events, ${eventFilter.count} this week`}
+                  onClick={() => eventFilter.onChange(!eventFilter.selected)}
+                >
+                  <span className="filter-chip__dot" aria-hidden />
+                  <span className="filter-chip__label">Event</span>
+                  <span
+                    className="filter-chip__count"
+                    aria-label={`${eventFilter.count} this week`}
+                  >
+                    {eventFilter.count}
+                  </span>
+                </button>
+              ) : null}
+
+              {meetFilter ? (
+                <button
+                  type="button"
+                  className={`filter-chip filter-chip--meet${
+                    meetFilter.selected ? ' is-active' : ''
+                  }`}
+                  style={{ '--chip-color': MEET_COLOR } as CSSProperties}
+                  aria-pressed={meetFilter.selected}
+                  aria-label={`Meets, ${meetFilter.count} this week`}
+                  onClick={() => meetFilter.onChange(!meetFilter.selected)}
+                >
+                  <span className="filter-chip__dot" aria-hidden />
+                  <span className="filter-chip__label">Meet</span>
+                  <span
+                    className="filter-chip__count"
+                    aria-label={`${meetFilter.count} this week`}
+                  >
+                    {meetFilter.count}
+                  </span>
+                </button>
+              ) : null}
+            </div>
+          </div>
         ) : null}
       </div>
     </section>
