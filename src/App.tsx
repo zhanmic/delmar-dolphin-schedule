@@ -15,7 +15,6 @@ const DEFAULT_SELECTED: SubTeam[] = ['Sr']
 export default function App() {
   const [anchor, setAnchor] = useState(() => new Date())
   const [events, setEvents] = useState<CommitEvent[]>([])
-  const [teamName, setTeamName] = useState('Delmar Dolfins')
   const [timeZone, setTimeZone] = useState(TEAM_TZ)
   const [selected, setSelected] = useState<Set<SubTeam>>(
     () => new Set(DEFAULT_SELECTED),
@@ -44,7 +43,6 @@ export default function App() {
           fetchScheduleData(),
         ])
         if (cancelled) return
-        setTeamName(config.superTeam?.name ?? 'Delmar Dolfins')
         setTimeZone(config.superTeam?.timezone ?? TEAM_TZ)
         setEvents(schedule.events ?? [])
       } catch (err) {
@@ -116,10 +114,7 @@ export default function App() {
       <div className="app__glow" aria-hidden />
       <header className="hero">
         <div className="hero__top">
-          <div className="hero__brand-block">
-            <p className="hero__eyebrow">Practice schedule</p>
-            <h1 className="hero__brand">{teamName}</h1>
-          </div>
+          <h1 className="hero__brand">Delma Dolphins Schedule</h1>
           <ThemeToggle />
         </div>
         <p className="hero__sub">
