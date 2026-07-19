@@ -70,7 +70,6 @@ export function GroupFilters({
 
       <div className="filters__rows">
         <div className="filters__row" role="group" aria-label="Groups">
-          <span className="filters__row-label">Group</span>
           <div className="filters__list">
             {teams.map((team) => {
               const active = selected.has(team)
