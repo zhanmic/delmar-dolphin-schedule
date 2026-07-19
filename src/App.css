@@ -777,6 +777,42 @@
   padding: 0.28rem 0.4rem 0.28rem 0.55rem;
   border-radius: 0.5rem;
   background: color-mix(in srgb, var(--team-meet) 12%, transparent);
+  align-items: flex-start;
+}
+
+.day-session--meet.day-session--stacked {
+  align-items: stretch;
+}
+
+.day-session__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.day-session__main {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.day-session--meet .day-session__name {
+  flex: 1 1 auto;
+}
+
+.day-session--meet .day-session__time {
+  margin-left: 0;
+}
+
+.day-session--meet .day-session__loc {
+  flex: 0 0 auto;
+  max-width: none;
+  font-size: 0.82rem;
+  font-weight: 550;
+  color: var(--muted);
 }
 
 .day-session--event {
@@ -1428,6 +1464,14 @@
 
   .app--fit .day-session--meet {
     padding: 0.18rem 0.35rem 0.18rem 0.5rem;
+  }
+
+  .app--fit .day-session--meet .day-session__kind {
+    align-self: center;
+  }
+
+  .app--fit .day-session--meet .day-session__loc {
+    font-size: 0.78rem;
   }
 
   .app--fit .day-session--event {

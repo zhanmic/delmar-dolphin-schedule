@@ -129,12 +129,16 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                 {group.occurrences.map((occ) => {
                   const kind = sessionKind(occ)
                   const isPractice = kind === 'practice'
+                  const isMeet = kind === 'meet'
                   const team = primaryTeam(occ.subTeams)
                   const loc = occ.location
+                  const time = formatTimeRangeCompact(occ.start, occ.end)
                   return (
                     <article
                       key={occ.id}
-                      className={`day-session day-session--${kind}`}
+                      className={`day-session day-session--${kind}${
+                        isMeet && loc ? ' day-session--stacked' : ''
+                      }`}
                       style={
                         {
                           '--card-accent': sessionAccent(occ),
@@ -144,7 +148,7 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                         sessionKindTitle(kind),
                         isPractice ? team : occ.name,
                         loc,
-                        formatTimeRangeCompact(occ.start, occ.end),
+                        time,
                       ]
                         .filter(Boolean)
                         .join(', ')}
@@ -153,17 +157,29 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                         kind={kind}
                         className="day-session__kind"
                       />
-                      {isPractice ? (
-                        <span className="day-session__team">{team}</span>
+                      {isMeet ? (
+                        <span className="day-session__body">
+                          <span className="day-session__main">
+                            <span className="day-session__name">{occ.name}</span>
+                            <span className="day-session__time">{time}</span>
+                          </span>
+                          {loc ? (
+                            <span className="day-session__loc">{loc}</span>
+                          ) : null}
+                        </span>
                       ) : (
-                        <span className="day-session__name">{occ.name}</span>
+                        <>
+                          {isPractice ? (
+                            <span className="day-session__team">{team}</span>
+                          ) : (
+                            <span className="day-session__name">{occ.name}</span>
+                          )}
+                          {loc ? (
+                            <span className="day-session__loc">{loc}</span>
+                          ) : null}
+                          <span className="day-session__time">{time}</span>
+                        </>
                       )}
-                      {loc ? (
-                        <span className="day-session__loc">{loc}</span>
-                      ) : null}
-                      <span className="day-session__time">
-                        {formatTimeRangeCompact(occ.start, occ.end)}
-                      </span>
                     </article>
                   )
                 })}
