@@ -103,11 +103,15 @@ export default function App() {
     [weekOccurrences, selected],
   )
 
-  /** One group on a phone → carpool-style fit (no page scroll). */
-  const fitMode = isMobile && selected.size === 1
+  /** Phone → concise carpool-style rows for any group selection. */
+  const fitMode = isMobile
+  /** Few sessions fill the screen; more sessions scroll inside the list. */
+  const fitScroll = fitMode && filtered.length > 8
 
   return (
-    <div className={`app${fitMode ? ' app--fit' : ''}`}>
+    <div
+      className={`app${fitMode ? ' app--fit' : ''}${fitScroll ? ' app--fit-scroll' : ''}`}
+    >
       <div className="app__glow" aria-hidden />
       <header className="hero">
         <p className="hero__eyebrow">Practice schedule</p>

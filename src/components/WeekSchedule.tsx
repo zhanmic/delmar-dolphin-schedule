@@ -1,10 +1,13 @@
 import type { CSSProperties } from 'react'
+import { toZonedTime } from 'date-fns-tz'
+import { format } from 'date-fns'
 import { SUB_TEAM_COLORS } from '../lib/groups'
 import {
   dayHeading,
   formatTimeRange,
   formatTimeRangeCompact,
   isOccurrenceOnDay,
+  TEAM_TZ,
   type WeekModel,
 } from '../lib/week'
 import type { Occurrence, SubTeam } from '../types'
@@ -12,7 +15,7 @@ import type { Occurrence, SubTeam } from '../types'
 interface Props {
   week: WeekModel
   occurrences: Occurrence[]
-  /** Single-group mobile fit: equal-height day rows, no page scroll */
+  /** Mobile concise list (carpool-style rows) */
   fitMode?: boolean
 }
 
@@ -20,19 +23,22 @@ function primaryTeam(teams: SubTeam[]): SubTeam {
   return teams[0] ?? 'Other'
 }
 
+function occDayMeta(occ: Occurrence, week: WeekModel) {
+  const day = week.days.find((d) => isOccurrenceOnDay(occ.start, d))
+  if (day) return dayHeading(day)
+  const local = toZonedTime(occ.start, TEAM_TZ)
+  return {
+    weekday: format(local, 'EEE'),
+    date: format(local, 'MMM d'),
+    shortDate: format(local, 'M/d'),
+    isToday: false,
+    instant: local,
+  }
+}
+
 export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
   if (fitMode) {
-    const rows = week.days
-      .map((day) => {
-        const heading = dayHeading(day)
-        const dayOccs = occurrences.filter((o) =>
-          isOccurrenceOnDay(o.start, day),
-        )
-        return { day, heading, dayOccs }
-      })
-      .filter((row) => row.dayOccs.length > 0)
-
-    if (rows.length === 0) {
+    if (occurrences.length === 0) {
       return (
         <div className="week-list week-list--fit">
           <p className="day-col__empty">No practices</p>
@@ -42,15 +48,13 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
 
     return (
       <div className="week-list week-list--fit" role="list">
-        {rows.map(({ day, heading, dayOccs }) => {
-          const team = primaryTeam(dayOccs[0].subTeams)
-          const loc =
-            dayOccs[0].location ??
-            dayOccs.map((o) => o.location).find(Boolean) ??
-            'Practice'
+        {occurrences.map((occ) => {
+          const team = primaryTeam(occ.subTeams)
+          const heading = occDayMeta(occ, week)
+          const loc = occ.location ?? 'Practice'
           return (
             <article
-              key={day.key}
+              key={occ.id}
               className={`day-row${heading.isToday ? ' is-today' : ''}`}
               role="listitem"
               style={
@@ -58,29 +62,21 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                   '--card-accent': SUB_TEAM_COLORS[team],
                 } as CSSProperties
               }
-              aria-label={`${heading.weekday} ${heading.date}`}
+              aria-label={`${heading.weekday} ${heading.shortDate}, ${team}, ${loc}`}
             >
               <div className="day-row__main">
                 <span className="day-row__when">
                   <span className="day-row__weekday">{heading.weekday}</span>
                   <span className="day-row__date">{heading.shortDate}</span>
                 </span>
-                <span className="day-row__loc">{loc}</span>
+                <span className="day-row__mid">
+                  <span className="day-row__team">{team}</span>
+                  <span className="day-row__loc">{loc}</span>
+                </span>
                 <span className="day-row__time">
-                  {dayOccs.length === 1
-                    ? formatTimeRangeCompact(dayOccs[0].start, dayOccs[0].end)
-                    : dayOccs
-                        .map((o) => formatTimeRangeCompact(o.start, o.end))
-                        .join(' · ')}
+                  {formatTimeRangeCompact(occ.start, occ.end)}
                 </span>
               </div>
-              {dayOccs.length > 1 ? (
-                <ul className="day-row__extras">
-                  {dayOccs.map((occ) => (
-                    <li key={occ.id}>{occ.name}</li>
-                  ))}
-                </ul>
-              ) : null}
             </article>
           )
         })}

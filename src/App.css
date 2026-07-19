@@ -402,12 +402,30 @@
   color: var(--muted);
 }
 
+.day-row__mid {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+  text-align: center;
+}
+
+.day-row__team {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--card-accent, var(--cyan));
+  line-height: 1.1;
+}
+
 .day-row__loc {
   min-width: 0;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  text-align: center;
   font-size: 0.9rem;
   font-weight: 650;
   color: var(--ink);
@@ -475,21 +493,7 @@
   }
 }
 
-/* Multi-team / default mobile: stacked days, scroll OK */
 @media (max-width: 960px) {
-  .app:not(.app--fit) {
-    width: calc(100% - 1.25rem);
-    padding: 1rem 0 2rem;
-  }
-
-  .app:not(.app--fit) .hero__brand {
-    font-size: clamp(1.8rem, 8vw, 2.4rem);
-  }
-
-  .app:not(.app--fit) .hero__sub {
-    font-size: 0.95rem;
-  }
-
   .week-grid {
     grid-template-columns: 1fr;
   }
@@ -506,8 +510,8 @@
 }
 
 /*
- * Single-group mobile fit (carpool-style):
- * lock to 100dvh, chrome shrink-0, day rows share remaining height.
+ * Mobile concise layout (any number of groups):
+ * lock chrome to 100dvh; session rows share height or scroll inside the list.
  */
 @media (max-width: 720px) {
   .app--fit {
@@ -660,6 +664,10 @@
     font-size: 0.68rem;
   }
 
+  .app--fit .day-row__team {
+    font-size: 0.6rem;
+  }
+
   .app--fit .day-row__loc {
     font-size: 0.82rem;
   }
@@ -668,8 +676,15 @@
     font-size: 0.72rem;
   }
 
-  .app--fit .day-row__extras {
-    display: none;
+  /* Many sessions (e.g. multi-group): keep concise rows, scroll the list only */
+  .app--fit.app--fit-scroll .week-list--fit {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .app--fit.app--fit-scroll .day-row {
+    flex: 0 0 auto;
+    min-height: 2.75rem;
   }
 }
 
