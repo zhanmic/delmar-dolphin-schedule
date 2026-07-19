@@ -69,8 +69,8 @@ export function GroupFilters({
       </div>
 
       <div className="filters__rows">
-        <div className="filters__row" role="group" aria-label="Practice groups">
-          <span className="filters__row-label">Practice</span>
+        <div className="filters__row" role="group" aria-label="Groups">
+          <span className="filters__row-label">Group</span>
           <div className="filters__list">
             {teams.map((team) => {
               const active = selected.has(team)
@@ -107,9 +107,6 @@ export function GroupFilters({
             role="group"
             aria-label="Events and meets"
           >
-            <span className="filters__row-label filters__row-label--spacer" aria-hidden>
-              Practice
-            </span>
             <div className="filters__list">
               {eventFilter ? (
                 <button

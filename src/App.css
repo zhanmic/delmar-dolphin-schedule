@@ -454,12 +454,6 @@
   line-height: 1;
 }
 
-.filters__row-label--spacer {
-  visibility: hidden;
-  user-select: none;
-  pointer-events: none;
-}
-
 .filters__list {
   display: flex;
   flex-wrap: wrap;
