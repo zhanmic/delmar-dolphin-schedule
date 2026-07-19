@@ -647,7 +647,7 @@
 
 .practice-card__team,
 .practice-card__loc {
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -663,7 +663,7 @@
 
 .practice-card__title {
   margin: 0;
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   font-weight: 650;
   line-height: 1.25;
   color: var(--ink);
@@ -671,7 +671,7 @@
 
 .practice-card__time {
   margin: 0.3rem 0 0;
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--cyan-soft);
 }
@@ -711,7 +711,7 @@
 }
 
 .day-group__weekday {
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--ink);
 }
@@ -721,7 +721,7 @@
 }
 
 .day-group__date {
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   color: var(--muted);
 }
 
@@ -789,8 +789,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.35rem;
+  height: 1.35rem;
   padding: 0;
   border-radius: 0.3rem;
   color: var(--ink);
@@ -814,8 +814,8 @@
 }
 
 .day-session__kind .session-kind__icon {
-  width: 0.78rem;
-  height: 0.78rem;
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
 .practice-card__kind .session-kind__icon,
@@ -826,7 +826,7 @@
 
 .day-session__team {
   flex: 0 0 auto;
-  font-size: 0.72rem;
+  font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -841,7 +841,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   font-weight: 650;
   color: var(--ink);
 }
@@ -853,7 +853,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 550;
   color: var(--muted);
 }
@@ -861,7 +861,7 @@
 .day-session--practice .day-session__loc {
   flex: 1 1 auto;
   max-width: none;
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--ink);
 }
@@ -870,7 +870,7 @@
   flex: 0 0 auto;
   margin-left: auto;
   white-space: nowrap;
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--cyan-soft);
   text-align: right;
@@ -1408,42 +1408,42 @@
   }
 
   .app--fit .day-group__weekday {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
 
   .app--fit .day-group__date {
-    font-size: 0.68rem;
+    font-size: 0.78rem;
   }
 
   .app--fit .day-session__kind {
-    width: 1.1rem;
-    height: 1.1rem;
+    width: 1.25rem;
+    height: 1.25rem;
     padding: 0;
   }
 
   .app--fit .day-session__kind .session-kind__icon {
-    width: 0.72rem;
-    height: 0.72rem;
+    width: 0.82rem;
+    height: 0.82rem;
   }
 
   .app--fit .day-session__team {
-    font-size: 0.68rem;
+    font-size: 0.8rem;
   }
 
   .app--fit .day-session__name {
-    font-size: 0.78rem;
+    font-size: 0.9rem;
   }
 
   .app--fit .day-session__loc {
-    font-size: 0.72rem;
+    font-size: 0.82rem;
   }
 
   .app--fit .day-session--practice .day-session__loc {
-    font-size: 0.78rem;
+    font-size: 0.9rem;
   }
 
   .app--fit .day-session__time {
-    font-size: 0.72rem;
+    font-size: 0.82rem;
   }
 
   /* Many sessions (e.g. multi-group): keep concise day blocks, scroll the list */
