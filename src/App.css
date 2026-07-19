@@ -735,6 +735,229 @@
   text-align: right;
 }
 
+.day-group--interactive {
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.day-group--interactive:hover {
+  border-color: color-mix(in srgb, var(--cyan) 45%, var(--line));
+  transform: translateY(-1px);
+}
+
+.day-group--interactive:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.day-col--interactive {
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.day-col--interactive:hover {
+  border-color: color-mix(in srgb, var(--cyan) 45%, var(--line));
+  transform: translateY(-1px);
+}
+
+.day-col--interactive:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.day-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.day-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: color-mix(in srgb, #061018 55%, transparent);
+  cursor: pointer;
+}
+
+.day-sheet__panel {
+  position: relative;
+  z-index: 1;
+  width: min(34rem, 100%);
+  max-height: min(88dvh, 52rem);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 1.15rem 1.15rem 0 0;
+  background: color-mix(in srgb, var(--surface) 97%, transparent);
+  box-shadow: var(--panel-shadow);
+  backdrop-filter: blur(14px);
+  animation: rise 0.22s ease both;
+}
+
+.day-sheet__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.day-sheet__heading {
+  min-width: 0;
+}
+
+.day-sheet__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.day-sheet__subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.day-sheet__close {
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--toggle-bg);
+  color: var(--ink);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.day-sheet__close:hover {
+  border-color: color-mix(in srgb, var(--cyan) 45%, var(--line));
+}
+
+.day-sheet__close:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.day-sheet__body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.85rem 1rem max(1rem, var(--safe-bottom));
+  display: grid;
+  gap: 0.75rem;
+}
+
+.day-sheet__card {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: var(--surface-2);
+  padding: 0.8rem 0.85rem 0.85rem 0.95rem;
+  overflow: hidden;
+}
+
+.day-sheet__card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.65rem;
+  bottom: 0.65rem;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--card-accent, var(--cyan));
+}
+
+.day-sheet__card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.day-sheet__badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--card-accent, var(--cyan));
+}
+
+.day-sheet__card-time {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--cyan-soft);
+  white-space: nowrap;
+}
+
+.day-sheet__card-title {
+  margin: 0 0 0.65rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.day-sheet__fields {
+  margin: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.day-sheet__field {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 0.55rem;
+  align-items: start;
+}
+
+.day-sheet__field dt {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 0.1rem;
+}
+
+.day-sheet__field dd {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 550;
+  line-height: 1.35;
+  color: var(--ink);
+  word-break: break-word;
+}
+
+@media (min-width: 721px) {
+  .day-sheet {
+    align-items: center;
+    padding: 1.5rem;
+  }
+
+  .day-sheet__panel {
+    border-radius: 1.15rem;
+    max-height: min(80vh, 48rem);
+  }
+}
+
 .footer {
   display: flex;
   flex-wrap: wrap;

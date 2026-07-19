@@ -67,6 +67,12 @@ export type SubTeam =
   | 'Sr/Jr'
   | 'Other'
 
+/** One labeled row of source API data for the day detail sheet. */
+export interface DetailField {
+  label: string
+  value: string
+}
+
 export interface Occurrence {
   id: string
   sourceId: string
@@ -76,4 +82,6 @@ export interface Occurrence {
   end: Date
   subTeams: SubTeam[]
   location: string | null
+  /** Formatted fields from the original Commit API payload. */
+  fields: DetailField[]
 }

@@ -1,0 +1,114 @@
+import { useEffect, useId, useRef } from 'react'
+import { SUB_TEAM_COLORS } from '../lib/groups'
+import { formatTimeRange } from '../lib/week'
+import type { Occurrence, SubTeam } from '../types'
+import type { CSSProperties } from 'react'
+
+interface Props {
+  title: string
+  subtitle?: string
+  occurrences: Occurrence[]
+  onClose: () => void
+}
+
+function primaryTeam(teams: SubTeam[]): SubTeam {
+  return teams[0] ?? 'Other'
+}
+
+export function DayDetailSheet({
+  title,
+  subtitle,
+  occurrences,
+  onClose,
+}: Props) {
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const titleId = useId()
+  const closeRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    closeRef.current?.focus()
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') onClose()
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [onClose])
+
+  return (
+    <div className="day-sheet" role="presentation">
+      <button
+        type="button"
+        className="day-sheet__backdrop"
+        aria-label="Close day details"
+        onClick={onClose}
+      />
+      <div
+        ref={dialogRef}
+        className="day-sheet__panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+      >
+        <header className="day-sheet__header">
+          <div className="day-sheet__heading">
+            <h2 id={titleId} className="day-sheet__title">
+              {title}
+            </h2>
+            {subtitle ? (
+              <p className="day-sheet__subtitle">{subtitle}</p>
+            ) : null}
+          </div>
+          <button
+            ref={closeRef}
+            type="button"
+            className="day-sheet__close"
+            aria-label="Close"
+            onClick={onClose}
+          >
+            ×
+          </button>
+        </header>
+
+        <div className="day-sheet__body">
+          {occurrences.map((occ) => {
+            const team = primaryTeam(occ.subTeams)
+            return (
+              <article
+                key={occ.id}
+                className="day-sheet__card"
+                style={
+                  {
+                    '--card-accent': SUB_TEAM_COLORS[team],
+                  } as CSSProperties
+                }
+              >
+                <div className="day-sheet__card-top">
+                  <span className="day-sheet__badge">{occ.label}</span>
+                  <span className="day-sheet__card-time">
+                    {formatTimeRange(occ.start, occ.end)}
+                  </span>
+                </div>
+                <h3 className="day-sheet__card-title">{occ.name}</h3>
+                <dl className="day-sheet__fields">
+                  {occ.fields.map((field) => (
+                    <div key={`${occ.id}-${field.label}`} className="day-sheet__field">
+                      <dt>{field.label}</dt>
+                      <dd>{field.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </article>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}

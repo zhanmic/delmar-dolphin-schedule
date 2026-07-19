@@ -1,6 +1,7 @@
 import { addDays, addMonths, addYears } from 'date-fns'
 import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 import type { CommitEvent, CommitMeet, Occurrence } from '../types'
+import { buildEventDetailFields, buildMeetDetailFields } from './detailFields'
 import { parseEventTeams } from './groups'
 import { parsePracticeName } from './nameFormat'
 import {
@@ -178,20 +179,11 @@ function toOccurrence(
   practiceNameFormat: PracticeNameFormat = DEFAULT_PRACTICE_NAME_FORMAT,
 ): Occurrence {
   const isTeamEvent = event.label === 'event'
-  if (isTeamEvent) {
-    return {
-      id: `${event._id}-${start.getTime()}`,
-      sourceId: event._id,
-      name,
-      label: event.label,
-      start,
-      end,
-      subTeams: parseEventTeams(name, eventParseMode),
-      location: parsePracticeName(name, practiceNameFormat).location,
-    }
-  }
+  const subTeams = isTeamEvent
+    ? parseEventTeams(name, eventParseMode)
+    : parsePracticeName(name, practiceNameFormat).subTeams
+  const location = parsePracticeName(name, practiceNameFormat).location
 
-  const parsed = parsePracticeName(name, practiceNameFormat)
   return {
     id: `${event._id}-${start.getTime()}`,
     sourceId: event._id,
@@ -199,8 +191,16 @@ function toOccurrence(
     label: event.label,
     start,
     end,
-    subTeams: parsed.subTeams,
-    location: parsed.location,
+    subTeams,
+    location,
+    fields: buildEventDetailFields(
+      event,
+      name,
+      start,
+      end,
+      subTeams,
+      location,
+    ),
   }
 }
 
@@ -244,6 +244,7 @@ export function expandMeets(
       [meet.city, meet.state].filter(Boolean).join(', ') ||
       null
 
+    const subTeams = parseEventTeams(name, eventParseMode)
     results.push({
       id: `meet-${meet._id}-${start.getTime()}`,
       sourceId: meet._id,
@@ -251,8 +252,16 @@ export function expandMeets(
       label: 'meet',
       start,
       end,
-      subTeams: parseEventTeams(name, eventParseMode),
+      subTeams,
       location,
+      fields: buildMeetDetailFields(
+        meet,
+        name,
+        start,
+        end,
+        subTeams,
+        location,
+      ),
     })
   }
 
