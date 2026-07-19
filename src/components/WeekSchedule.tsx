@@ -9,6 +9,7 @@ import {
 } from '../lib/week'
 import type { Occurrence, SubTeam } from '../types'
 import { DayDetailSheet } from './DayDetailSheet'
+import { ScrollableName } from './ScrollableName'
 import { SessionKindIcon } from './SessionKindIcon'
 
 interface Props {
@@ -160,7 +161,10 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                       {isMeet ? (
                         <span className="day-session__body">
                           <span className="day-session__main">
-                            <span className="day-session__name">{occ.name}</span>
+                            <ScrollableName
+                              text={occ.name}
+                              className="day-session__name"
+                            />
                             <span className="day-session__time">{time}</span>
                           </span>
                           {loc ? (
@@ -172,7 +176,10 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                           {isPractice ? (
                             <span className="day-session__team">{team}</span>
                           ) : (
-                            <span className="day-session__name">{occ.name}</span>
+                            <ScrollableName
+                              text={occ.name}
+                              className="day-session__name"
+                            />
                           )}
                           {loc ? (
                             <span className="day-session__loc">{loc}</span>
@@ -258,7 +265,13 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                             <span className="practice-card__loc">{loc}</span>
                           ) : null}
                         </div>
-                        <h3 className="practice-card__title">{occ.name}</h3>
+                        <h3 className="practice-card__title">
+                          {isPractice ? (
+                            occ.name
+                          ) : (
+                            <ScrollableName text={occ.name} />
+                          )}
+                        </h3>
                         <p className="practice-card__time">
                           {formatTimeRange(occ.start, occ.end)}
                         </p>

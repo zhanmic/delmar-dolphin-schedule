@@ -687,6 +687,7 @@
 
 .practice-card__title {
   margin: 0;
+  min-width: 0;
   font-size: 0.95rem;
   font-weight: 650;
   line-height: 1.25;
@@ -904,6 +905,66 @@
   font-size: 0.95rem;
   font-weight: 650;
   color: var(--ink);
+}
+
+.scroll-name {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.scroll-name.day-session__name {
+  text-overflow: clip;
+}
+
+.scroll-name__text {
+  display: inline-block;
+  max-width: none;
+  white-space: nowrap;
+}
+
+.scroll-name.is-overflow {
+  mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 calc(100% - 0.85rem),
+    transparent 100%
+  );
+}
+
+.scroll-name.is-overflow .scroll-name__text {
+  animation: scroll-name-marquee var(--scroll-duration, 7s) ease-in-out infinite
+    alternate;
+  will-change: transform;
+}
+
+@keyframes scroll-name-marquee {
+  0%,
+  12% {
+    transform: translateX(0);
+  }
+  88%,
+  100% {
+    transform: translateX(calc(-1 * var(--scroll-distance, 0px)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-name.is-overflow {
+    mask-image: none;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .scroll-name.is-overflow .scroll-name__text {
+    animation: none;
+  }
+}
+
+.practice-card__title .scroll-name {
+  width: 100%;
 }
 
 .day-session__loc {
