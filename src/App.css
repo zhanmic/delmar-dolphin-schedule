@@ -784,12 +784,32 @@
   white-space: nowrap;
 }
 
-.day-session__loc {
+.day-session__name {
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: var(--ink);
+}
+
+.day-session__loc {
+  flex: 0 1 auto;
+  max-width: 38%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.78rem;
+  font-weight: 550;
+  color: var(--muted);
+}
+
+.day-session--practice .day-session__loc {
+  flex: 1 1 auto;
+  max-width: none;
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--ink);
@@ -1324,7 +1344,15 @@
     font-size: 0.68rem;
   }
 
+  .app--fit .day-session__name {
+    font-size: 0.78rem;
+  }
+
   .app--fit .day-session__loc {
+    font-size: 0.72rem;
+  }
+
+  .app--fit .day-session--practice .day-session__loc {
     font-size: 0.78rem;
   }
 

@@ -117,9 +117,7 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                 {group.occurrences.map((occ) => {
                   const isMeet = occ.label === 'meet'
                   const team = sessionLabel(occ)
-                  const loc =
-                    occ.location ??
-                    (isMeet ? occ.name : null)
+                  const loc = occ.location
                   return (
                     <article
                       key={occ.id}
@@ -133,7 +131,7 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                       }
                       aria-label={[
                         isMeet ? 'Meet' : 'Practice',
-                        !isMeet ? team : null,
+                        isMeet ? occ.name : team,
                         loc,
                         formatTimeRangeCompact(occ.start, occ.end),
                       ]
@@ -143,9 +141,11 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                       <span className="day-session__kind">
                         {isMeet ? 'Meet' : 'Practice'}
                       </span>
-                      {!isMeet ? (
+                      {isMeet ? (
+                        <span className="day-session__name">{occ.name}</span>
+                      ) : (
                         <span className="day-session__team">{team}</span>
-                      ) : null}
+                      )}
                       {loc ? (
                         <span className="day-session__loc">{loc}</span>
                       ) : null}
