@@ -32,18 +32,12 @@ function SwimmerIcon() {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="currentColor"
       className="session-kind__icon"
+      aria-hidden
     >
-      <circle cx="16.5" cy="5.5" r="2" />
-      <path d="M4 12.5h5.5l2.8-2.2 3.2 2.2H21" />
-      <path d="m10.2 12.5 1.6 3.4 3.4-.8" />
-      <path d="M3 18.5c1.6-1.1 3.1-1.1 4.7 0s3.1 1.1 4.7 0 3.1-1.1 4.7 0 3.1 1.1 4.7 0" />
-      <path d="M3 21.2c1.6-1.1 3.1-1.1 4.7 0s3.1 1.1 4.7 0 3.1-1.1 4.7 0 3.1 1.1 4.7 0" />
+      {/* Material Design Icons “swim” pictogram — reads clearly at ~12–16px */}
+      <path d="M2 18c2.22-1 4.44-2 6.67-2 2.22 0 4.44 2 6.66 2 2.23 0 4.45-2 6.67-2v3c-2.22 0-4.44 2-6.67 2-2.22 0-4.44-2-6.66-2-2.23 0-4.45 1-6.67 2zm6.67-5c-.78 0-1.55.12-2.32.32l4.92-3.44-1.04-1.24c-.14-.17-.23-.4-.23-.64 0-.34.17-.65.44-.83l5.72-4 1.15 1.63-4.84 3.39 5.23 6.23c-.79.33-1.58.58-2.37.58-2.22 0-4.44-2-6.66-2M18 7a2 2 0 1 1 0 4 2 2 0 0 1 0-4" />
     </svg>
   )
 }
