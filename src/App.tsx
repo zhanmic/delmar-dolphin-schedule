@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { fetchScheduleData, fetchTeamConfig } from './api/commit'
 import { GroupFilters } from './components/GroupFilters'
+import { ThemeToggle } from './components/ThemeToggle'
 import { WeekNav } from './components/WeekNav'
 import { WeekSchedule } from './components/WeekSchedule'
 import { expandEvents, expandPractices } from './lib/expand'
@@ -114,8 +115,13 @@ export default function App() {
     >
       <div className="app__glow" aria-hidden />
       <header className="hero">
-        <p className="hero__eyebrow">Practice schedule</p>
-        <h1 className="hero__brand">{teamName}</h1>
+        <div className="hero__top">
+          <div className="hero__brand-block">
+            <p className="hero__eyebrow">Practice schedule</p>
+            <h1 className="hero__brand">{teamName}</h1>
+          </div>
+          <ThemeToggle />
+        </div>
         <p className="hero__sub">
           Weekly view by group — powered by the live Commit calendar API.
         </p>

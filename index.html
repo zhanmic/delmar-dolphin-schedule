@@ -18,6 +18,18 @@
       rel="stylesheet"
     />
     <title>Delmar Dolfins Schedule</title>
+    <script>
+      (function () {
+        try {
+          var k = 'delmar-schedule:theme'
+          var t = localStorage.getItem(k)
+          var h = new Date().getHours()
+          var d = t === 'dark' || (t !== 'light' && (h >= 19 || h < 7))
+          document.documentElement.classList.toggle('dark', d)
+          document.documentElement.style.colorScheme = d ? 'dark' : 'light'
+        } catch (e) {}
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

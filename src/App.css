@@ -11,14 +11,62 @@
   pointer-events: none;
   z-index: -1;
   background:
-    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(34, 211, 238, 0.18), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 90% 0%, rgba(251, 191, 36, 0.12), transparent 50%),
-    linear-gradient(180deg, #06202b 0%, #0a3340 42%, #0d3d4a 100%);
+    radial-gradient(ellipse 80% 50% at 10% -10%, var(--glow-a), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 0%, var(--glow-b), transparent 50%),
+    var(--glow-base);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border: 1px solid var(--toggle-border);
+  border-radius: 999px;
+  background: var(--toggle-bg);
+  color: var(--toggle-fg);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.theme-toggle:hover {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--cyan) 45%, var(--toggle-border));
+  transform: translateY(-1px);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.theme-toggle__icon {
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 .hero {
   margin-bottom: 1.75rem;
   animation: rise 0.7s ease both;
+}
+
+.hero__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.hero__brand-block {
+  min-width: 0;
+  flex: 1;
 }
 
 .hero__eyebrow {
@@ -55,7 +103,7 @@
   border-radius: 1.25rem;
   padding: 1.25rem 1.25rem 1rem;
   backdrop-filter: blur(10px);
-  box-shadow: 0 24px 60px rgba(2, 16, 22, 0.35);
+  box-shadow: var(--panel-shadow);
   animation: rise 0.8s ease 0.08s both;
 }
 
@@ -215,7 +263,7 @@
 }
 
 .state--error {
-  color: #fecaca;
+  color: var(--error);
 }
 
 .week-grid {
@@ -535,6 +583,10 @@
     animation: none;
   }
 
+  .app--fit .hero__top {
+    align-items: center;
+  }
+
   .app--fit .hero__eyebrow {
     font-size: 0.65rem;
     margin-bottom: 0.15rem;
@@ -548,6 +600,16 @@
 
   .app--fit .hero__sub {
     display: none;
+  }
+
+  .app--fit .theme-toggle {
+    width: 2.15rem;
+    height: 2.15rem;
+  }
+
+  .app--fit .theme-toggle__icon {
+    width: 1rem;
+    height: 1rem;
   }
 
   .app--fit .panel {
