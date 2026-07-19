@@ -26,8 +26,9 @@
   --team-devo: #e11d48;
   --team-sr-jr: #7c3aed;
   --team-other: #64748b;
-  --team-meet: #0e8a98;
-  --team-event: #b45309;
+  /* Distinct from practice group palette (blue/green/amber/rose/violet/slate) */
+  --team-meet: #c026d3;
+  --team-event: #4f46e5;
 
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -66,8 +67,8 @@ html.dark {
   --team-devo: #fb7185;
   --team-sr-jr: #a78bfa;
   --team-other: #94a3b8;
-  --team-meet: #22d3ee;
-  --team-event: #fbbf24;
+  --team-meet: #e879f9;
+  --team-event: #818cf8;
 
   color-scheme: dark;
 }
