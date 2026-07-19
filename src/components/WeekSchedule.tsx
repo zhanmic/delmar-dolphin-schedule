@@ -131,7 +131,7 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                   const isPractice = kind === 'practice'
                   const isMeet = kind === 'meet'
                   const team = primaryTeam(occ.subTeams)
-                  const loc = occ.location
+                  const loc = kind === 'event' ? null : occ.location
                   const time = formatTimeRangeCompact(occ.start, occ.end)
                   return (
                     <article
@@ -235,6 +235,7 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                     const kind = sessionKind(occ)
                     const isPractice = kind === 'practice'
                     const team = primaryTeam(occ.subTeams)
+                    const loc = kind === 'event' ? null : occ.location
                     return (
                       <article
                         key={occ.id}
@@ -253,10 +254,8 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                           {isPractice ? (
                             <span className="practice-card__team">{team}</span>
                           ) : null}
-                          {occ.location ? (
-                            <span className="practice-card__loc">
-                              {occ.location}
-                            </span>
+                          {loc ? (
+                            <span className="practice-card__loc">{loc}</span>
                           ) : null}
                         </div>
                         <h3 className="practice-card__title">{occ.name}</h3>
