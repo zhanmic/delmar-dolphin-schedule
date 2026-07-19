@@ -1,0 +1,48 @@
+:root {
+  --font-display: 'Bricolage Grotesque', Georgia, serif;
+  --font-body: 'Figtree', system-ui, sans-serif;
+
+  --ink: #f3fafc;
+  --muted: #9db8c2;
+  --cyan: #14b8c8;
+  --cyan-soft: #67e8f9;
+  --surface: #0d2a33;
+  --surface-2: #11343f;
+  --surface-3: #16404d;
+  --line: rgba(148, 196, 210, 0.18);
+
+  --team-sr: #38bdf8;
+  --team-jr: #34d399;
+  --team-jr-prep: #fbbf24;
+  --team-devo: #fb7185;
+  --team-sr-jr: #a78bfa;
+  --team-other: #94a3b8;
+
+  font-family: var(--font-body);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  color: var(--ink);
+  background: #06202b;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
+}
