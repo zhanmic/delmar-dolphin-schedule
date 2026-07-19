@@ -656,8 +656,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.35rem;
-  height: 1.35rem;
+  width: 1.45rem;
+  height: 1.45rem;
   padding: 0;
   border-radius: 0.35rem;
   color: var(--ink);
@@ -819,10 +819,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.35rem;
-  height: 1.35rem;
+  width: 1.45rem;
+  height: 1.45rem;
   padding: 0;
-  border-radius: 0.3rem;
+  border-radius: 0.35rem;
   color: var(--ink);
   background: color-mix(in srgb, var(--muted) 22%, transparent);
 }
@@ -844,14 +844,14 @@
 }
 
 .day-session__kind .session-kind__icon {
-  width: 0.9rem;
-  height: 0.9rem;
+  width: 1rem;
+  height: 1rem;
 }
 
 .practice-card__kind .session-kind__icon,
 .day-sheet__badge .session-kind__icon {
-  width: 0.9rem;
-  height: 0.9rem;
+  width: 1rem;
+  height: 1rem;
 }
 
 .day-session__team {
@@ -1458,14 +1458,14 @@
   }
 
   .app--fit .day-session__kind {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1.35rem;
+    height: 1.35rem;
     padding: 0;
   }
 
   .app--fit .day-session__kind .session-kind__icon {
-    width: 0.82rem;
-    height: 0.82rem;
+    width: 0.92rem;
+    height: 0.92rem;
   }
 
   .app--fit .day-session__team {

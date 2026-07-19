@@ -26,8 +26,8 @@ export default function App() {
   const [selected, setSelected] = useState<Set<SubTeam>>(
     () => new Set(DEFAULT_SELECTED),
   )
-  const [showMeets, setShowMeets] = useState(true)
-  const [showEvents, setShowEvents] = useState(true)
+  const [showMeets, setShowMeets] = useState(false)
+  const [showEvents, setShowEvents] = useState(false)
   const [settings, setSettings] = useState<ScheduleSettings>(() =>
     getStoredSettings(),
   )
