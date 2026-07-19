@@ -5,10 +5,15 @@ import { SettingsButton } from './components/SettingsButton'
 import { ThemeToggle } from './components/ThemeToggle'
 import { WeekNav } from './components/WeekNav'
 import { WeekSchedule } from './components/WeekSchedule'
-import { expandEvents, expandPractices } from './lib/expand'
+import { expandEvents, expandMeets, expandPractices } from './lib/expand'
 import { occurrenceMatchesTeams, SUB_TEAM_ORDER } from './lib/groups'
+import {
+  getStoredSettings,
+  setStoredSettings,
+  type ScheduleSettings,
+} from './lib/settings'
 import { getWeekModel, shiftWeek, TEAM_TZ } from './lib/week'
-import type { CommitEvent, SubTeam } from './types'
+import type { CommitEvent, CommitMeet, SubTeam } from './types'
 import './App.css'
 
 const DEFAULT_SELECTED: SubTeam[] = ['Sr']
@@ -16,11 +21,14 @@ const DEFAULT_SELECTED: SubTeam[] = ['Sr']
 export default function App() {
   const [anchor, setAnchor] = useState(() => new Date())
   const [events, setEvents] = useState<CommitEvent[]>([])
+  const [meets, setMeets] = useState<CommitMeet[]>([])
   const [timeZone, setTimeZone] = useState(TEAM_TZ)
   const [selected, setSelected] = useState<Set<SubTeam>>(
     () => new Set(DEFAULT_SELECTED),
   )
-  const [showEvents, setShowEvents] = useState(false)
+  const [settings, setSettings] = useState<ScheduleSettings>(() =>
+    getStoredSettings(),
+  )
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
@@ -34,6 +42,10 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    setStoredSettings(settings)
+  }, [settings])
+
+  useEffect(() => {
     let cancelled = false
     ;(async () => {
       try {
@@ -41,11 +53,12 @@ export default function App() {
         setError(null)
         const [config, schedule] = await Promise.all([
           fetchTeamConfig(),
-          fetchScheduleData(),
+          fetchScheduleData(settings.queryMeets),
         ])
         if (cancelled) return
         setTimeZone(config.superTeam?.timezone ?? TEAM_TZ)
         setEvents(schedule.events ?? [])
+        setMeets(settings.queryMeets ? (schedule.meets ?? []) : [])
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err.message : 'Failed to load schedule')
@@ -57,7 +70,7 @@ export default function App() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [settings.queryMeets])
 
   const week = useMemo(
     () => getWeekModel(anchor, timeZone),
@@ -65,14 +78,36 @@ export default function App() {
   )
 
   const weekOccurrences = useMemo(() => {
-    if (showEvents) {
-      const source = events.filter(
-        (e) => e.label === 'practice' || e.label === 'event',
-      )
-      return expandEvents(source, week.rangeStart, week.rangeEnd, timeZone)
-    }
-    return expandPractices(events, week.rangeStart, week.rangeEnd, timeZone)
-  }, [events, week, timeZone, showEvents])
+    const practices = expandPractices(
+      events,
+      week.rangeStart,
+      week.rangeEnd,
+      timeZone,
+    )
+
+    const teamEvents = settings.includeTeamEvents
+      ? expandEvents(
+          events.filter((e) => e.label === 'event'),
+          week.rangeStart,
+          week.rangeEnd,
+          timeZone,
+          settings.eventParseMode,
+        )
+      : []
+
+    const meetOccurrences = settings.queryMeets
+      ? expandMeets(
+          meets,
+          week.rangeStart,
+          week.rangeEnd,
+          settings.eventParseMode,
+        )
+      : []
+
+    return [...practices, ...teamEvents, ...meetOccurrences].sort(
+      (a, b) => a.start.getTime() - b.start.getTime(),
+    )
+  }, [events, meets, week, timeZone, settings])
 
   const availableTeams = useMemo(() => {
     const present = new Set<SubTeam>()
@@ -115,7 +150,7 @@ export default function App() {
       <div className="app__glow" aria-hidden />
       <header className="hero">
         <div className="hero__top">
-          <SettingsButton />
+          <SettingsButton settings={settings} onChange={setSettings} />
           <h1 className="hero__brand">Delma Dolphins Schedule</h1>
           <ThemeToggle />
         </div>
@@ -144,15 +179,6 @@ export default function App() {
               onChange={setSelected}
               counts={counts}
             />
-
-            <label className="toggle-row">
-              <input
-                type="checkbox"
-                checked={showEvents}
-                onChange={(e) => setShowEvents(e.target.checked)}
-              />
-              <span>Include meets &amp; team events</span>
-            </label>
 
             {filtered.length === 0 ? (
               <div className="state">

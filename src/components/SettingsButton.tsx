@@ -1,11 +1,22 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import {
+  EVENT_PARSE_MODE_OPTIONS,
+  type EventParseMode,
+  type ScheduleSettings,
+} from '../lib/settings'
 import { useTheme } from './ThemeProvider'
 
 interface SettingsButtonProps {
   className?: string
+  settings: ScheduleSettings
+  onChange: (next: ScheduleSettings) => void
 }
 
-export function SettingsButton({ className = '' }: SettingsButtonProps) {
+export function SettingsButton({
+  className = '',
+  settings,
+  onChange,
+}: SettingsButtonProps) {
   const { theme, setTheme } = useTheme()
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
@@ -31,6 +42,10 @@ export function SettingsButton({ className = '' }: SettingsButtonProps) {
       document.removeEventListener('keydown', onKeyDown)
     }
   }, [open])
+
+  function patch(partial: Partial<ScheduleSettings>) {
+    onChange({ ...settings, ...partial })
+  }
 
   return (
     <div
@@ -69,7 +84,70 @@ export function SettingsButton({ className = '' }: SettingsButtonProps) {
           role="dialog"
           aria-label="Settings"
         >
-          <p className="settings__heading">Appearance</p>
+          <p className="settings__heading">Schedule</p>
+
+          <label className="settings__switch">
+            <input
+              type="checkbox"
+              checked={settings.includeTeamEvents}
+              onChange={(e) => patch({ includeTeamEvents: e.target.checked })}
+            />
+            <span>
+              <span className="settings__switch-label">Include team events</span>
+              <span className="settings__switch-hint">
+                Calendar items like meetings, breaks, and cancellations
+              </span>
+            </span>
+          </label>
+
+          <label className="settings__switch">
+            <input
+              type="checkbox"
+              checked={settings.queryMeets}
+              onChange={(e) => patch({ queryMeets: e.target.checked })}
+            />
+            <span>
+              <span className="settings__switch-label">Query meets</span>
+              <span className="settings__switch-hint">
+                Fetch Commit meet entries and show them on the week
+              </span>
+            </span>
+          </label>
+
+          <p className="settings__heading settings__heading--spaced">
+            Parse team events
+          </p>
+          <div
+            className="settings__stack"
+            role="radiogroup"
+            aria-label="Parse team events"
+          >
+            {EVENT_PARSE_MODE_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                role="radio"
+                aria-checked={settings.eventParseMode === option.value}
+                className={`settings__choice${
+                  settings.eventParseMode === option.value
+                    ? ' settings__choice--active'
+                    : ''
+                }`}
+                onClick={() =>
+                  patch({ eventParseMode: option.value as EventParseMode })
+                }
+              >
+                <span className="settings__choice-label">{option.label}</span>
+                <span className="settings__choice-hint">
+                  {option.description}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <p className="settings__heading settings__heading--spaced">
+            Appearance
+          </p>
           <div className="settings__theme" role="group" aria-label="Theme">
             <button
               type="button"
