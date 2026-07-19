@@ -119,8 +119,7 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                   const team = sessionLabel(occ)
                   const loc =
                     occ.location ??
-                    (isMeet ? occ.name : 'Practice')
-                  const primary = isMeet ? 'Meet' : team
+                    (isMeet ? occ.name : null)
                   return (
                     <article
                       key={occ.id}
@@ -132,19 +131,24 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                           '--card-accent': sessionAccent(occ),
                         } as CSSProperties
                       }
-                      aria-label={`${isMeet ? 'Meet' : 'Practice'}, ${primary}, ${loc}, ${formatTimeRangeCompact(occ.start, occ.end)}`}
+                      aria-label={[
+                        isMeet ? 'Meet' : 'Practice',
+                        !isMeet ? team : null,
+                        loc,
+                        formatTimeRangeCompact(occ.start, occ.end),
+                      ]
+                        .filter(Boolean)
+                        .join(', ')}
                     >
-                      <span className="day-session__mid">
-                        <span className="day-session__top">
-                          <span className="day-session__kind">
-                            {isMeet ? 'Meet' : 'Practice'}
-                          </span>
-                          {!isMeet ? (
-                            <span className="day-session__team">{team}</span>
-                          ) : null}
-                        </span>
-                        <span className="day-session__loc">{loc}</span>
+                      <span className="day-session__kind">
+                        {isMeet ? 'Meet' : 'Practice'}
                       </span>
+                      {!isMeet ? (
+                        <span className="day-session__team">{team}</span>
+                      ) : null}
+                      {loc ? (
+                        <span className="day-session__loc">{loc}</span>
+                      ) : null}
                       <span className="day-session__time">
                         {formatTimeRangeCompact(occ.start, occ.end)}
                       </span>
