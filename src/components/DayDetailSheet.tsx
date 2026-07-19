@@ -11,10 +11,6 @@ interface Props {
   onClose: () => void
 }
 
-function primaryTeam(teams: SubTeam[]): SubTeam {
-  return teams[0] ?? 'Other'
-}
-
 export function DayDetailSheet({
   title,
   subtitle,
@@ -78,14 +74,17 @@ export function DayDetailSheet({
 
         <div className="day-sheet__body">
           {occurrences.map((occ) => {
-            const team = primaryTeam(occ.subTeams)
+            const team = occ.label === 'meet' ? 'Meet' : (occ.subTeams[0] ?? 'Other')
             return (
               <article
                 key={occ.id}
                 className="day-sheet__card"
                 style={
                   {
-                    '--card-accent': SUB_TEAM_COLORS[team],
+                    '--card-accent':
+                      occ.label === 'meet'
+                        ? 'var(--team-meet)'
+                        : SUB_TEAM_COLORS[team as SubTeam] ?? 'var(--team-other)',
                   } as CSSProperties
                 }
               >

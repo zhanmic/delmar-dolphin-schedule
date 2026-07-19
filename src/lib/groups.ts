@@ -21,6 +21,8 @@ export const SUB_TEAM_COLORS: Record<SubTeam, string> = {
   Other: 'var(--team-other)',
 }
 
+export const MEET_COLOR = 'var(--team-meet)'
+
 /** Parse practice/event name into one or more sub-teams. */
 export function parseSubTeams(name: string): SubTeam[] {
   const n = name.trim()

@@ -72,7 +72,6 @@ export function buildMeetDetailFields(
   occurrenceName: string,
   start: Date,
   end: Date,
-  subTeams: SubTeam[],
   location: string | null,
 ): DetailField[] {
   const fields: DetailField[] = []
@@ -85,7 +84,6 @@ export function buildMeetDetailFields(
     pushField(fields, 'Meet file title', meet.titleEventsFile)
   }
   pushField(fields, 'Type', 'meet')
-  pushField(fields, 'Groups', subTeams.join(', '))
   pushField(fields, 'Location', location)
   pushField(fields, 'Venue', meet.locationDetails)
   pushField(

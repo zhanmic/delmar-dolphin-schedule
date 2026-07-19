@@ -1,5 +1,5 @@
 import { useState, type CSSProperties, type KeyboardEvent } from 'react'
-import { SUB_TEAM_COLORS } from '../lib/groups'
+import { MEET_COLOR, SUB_TEAM_COLORS } from '../lib/groups'
 import {
   dayHeading,
   formatTimeRange,
@@ -19,6 +19,16 @@ interface Props {
 
 function primaryTeam(teams: SubTeam[]): SubTeam {
   return teams[0] ?? 'Other'
+}
+
+function sessionAccent(occ: Occurrence): string {
+  if (occ.label === 'meet') return MEET_COLOR
+  return SUB_TEAM_COLORS[primaryTeam(occ.subTeams)]
+}
+
+function sessionLabel(occ: Occurrence): string {
+  if (occ.label === 'meet') return 'Meet'
+  return primaryTeam(occ.subTeams)
 }
 
 function groupOccurrencesByDay(week: WeekModel, occurrences: Occurrence[]) {
@@ -105,15 +115,15 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
 
               <div className="day-group__sessions">
                 {group.occurrences.map((occ) => {
-                  const team = primaryTeam(occ.subTeams)
-                  const loc = occ.location ?? 'Practice'
+                  const team = sessionLabel(occ)
+                  const loc = occ.location ?? (occ.label === 'meet' ? 'Meet' : 'Practice')
                   return (
                     <article
                       key={occ.id}
                       className="day-session"
                       style={
                         {
-                          '--card-accent': SUB_TEAM_COLORS[team],
+                          '--card-accent': sessionAccent(occ),
                         } as CSSProperties
                       }
                       aria-label={`${team}, ${loc}, ${formatTimeRangeCompact(occ.start, occ.end)}`}
@@ -177,14 +187,14 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                   <p className="day-col__empty">No practices</p>
                 ) : (
                   dayOccs.map((occ) => {
-                    const team = primaryTeam(occ.subTeams)
+                    const team = sessionLabel(occ)
                     return (
                       <article
                         key={occ.id}
                         className="practice-card"
                         style={
                           {
-                            '--card-accent': SUB_TEAM_COLORS[team],
+                            '--card-accent': sessionAccent(occ),
                           } as CSSProperties
                         }
                       >
