@@ -68,7 +68,7 @@ export function occurrenceMatchesTeams(
   teams: SubTeam[],
   selected: Set<SubTeam>,
 ): boolean {
-  if (selected.size === 0) return true
+  if (selected.size === 0) return false
   if (teams.some((t) => selected.has(t))) return true
   // Shared Sr/Jr sessions appear when either Sr or Jr is selected
   if (teams.includes('Sr/Jr') && (selected.has('Sr') || selected.has('Jr'))) {
