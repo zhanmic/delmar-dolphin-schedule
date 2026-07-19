@@ -1,7 +1,11 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import {
   EVENT_PARSE_MODE_OPTIONS,
+  NAME_FIELD_OPTIONS,
+  PRACTICE_PARSE_MODE_OPTIONS,
   type EventParseMode,
+  type NameField,
+  type PracticeParseMode,
   type ScheduleSettings,
 } from '../lib/settings'
 import { useTheme } from './ThemeProvider'
@@ -21,6 +25,7 @@ export function SettingsButton({
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
   const panelId = useId()
+  const format = settings.practiceNameFormat
 
   useEffect(() => {
     if (!open) return
@@ -45,6 +50,23 @@ export function SettingsButton({
 
   function patch(partial: Partial<ScheduleSettings>) {
     onChange({ ...settings, ...partial })
+  }
+
+  function patchFormat(
+    partial: Partial<ScheduleSettings['practiceNameFormat']>,
+  ) {
+    patch({
+      practiceNameFormat: {
+        ...format,
+        ...partial,
+      },
+    })
+  }
+
+  function setFieldAt(index: number, value: NameField) {
+    const fields = [...format.fields]
+    fields[index] = value
+    patchFormat({ fields })
   }
 
   return (
@@ -113,6 +135,81 @@ export function SettingsButton({
               </span>
             </span>
           </label>
+
+          <p className="settings__heading settings__heading--spaced">
+            Practice name format
+          </p>
+          <div
+            className="settings__stack"
+            role="radiogroup"
+            aria-label="Practice name format"
+          >
+            {PRACTICE_PARSE_MODE_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                role="radio"
+                aria-checked={format.mode === option.value}
+                className={`settings__choice${
+                  format.mode === option.value ? ' settings__choice--active' : ''
+                }`}
+                onClick={() =>
+                  patchFormat({ mode: option.value as PracticeParseMode })
+                }
+              >
+                <span className="settings__choice-label">{option.label}</span>
+                <span className="settings__choice-hint">
+                  {option.description}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {format.mode === 'fields' ? (
+            <div className="settings__format">
+              <label className="settings__field">
+                <span className="settings__field-label">Separator</span>
+                <input
+                  type="text"
+                  className="settings__input"
+                  value={format.separator}
+                  maxLength={3}
+                  aria-label="Name separator"
+                  onChange={(e) => {
+                    const next = e.target.value
+                    if (next.length > 0) patchFormat({ separator: next })
+                  }}
+                />
+              </label>
+
+              <p className="settings__field-label">Field order</p>
+              <div className="settings__fields">
+                {format.fields.map((field, index) => (
+                  <label key={`${field}-${index}`} className="settings__field">
+                    <span className="settings__field-index">{index + 1}</span>
+                    <select
+                      className="settings__select"
+                      value={field}
+                      aria-label={`Field ${index + 1}`}
+                      onChange={(e) =>
+                        setFieldAt(index, e.target.value as NameField)
+                      }
+                    >
+                      {NAME_FIELD_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+              </div>
+              <p className="settings__switch-hint">
+                Example: Sr - BCHS - 5:30 → group Sr, location BCHS; time is
+                ignored (API times are used).
+              </p>
+            </div>
+          ) : null}
 
           <p className="settings__heading settings__heading--spaced">
             Parse team events

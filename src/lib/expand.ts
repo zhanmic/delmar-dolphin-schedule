@@ -1,8 +1,13 @@
 import { addDays, addMonths, addYears } from 'date-fns'
 import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 import type { CommitEvent, CommitMeet, Occurrence } from '../types'
-import type { EventParseMode } from './settings'
-import { parseEventTeams, parseLocation, parseSubTeams } from './groups'
+import { parseEventTeams } from './groups'
+import { parsePracticeName } from './nameFormat'
+import {
+  DEFAULT_PRACTICE_NAME_FORMAT,
+  type EventParseMode,
+  type PracticeNameFormat,
+} from './settings'
 
 const DEFAULT_TZ = 'America/New_York'
 
@@ -57,6 +62,7 @@ export function expandEvents(
   rangeEnd: Date,
   timeZone: string = DEFAULT_TZ,
   eventParseMode: EventParseMode = 'fromName',
+  practiceNameFormat: PracticeNameFormat = DEFAULT_PRACTICE_NAME_FORMAT,
 ): Occurrence[] {
   const results: Occurrence[] = []
 
@@ -69,7 +75,14 @@ export function expandEvents(
     if (!rec) {
       if (baseStart >= rangeStart && baseStart < rangeEnd) {
         results.push(
-          toOccurrence(event, event.name, baseStart, baseEnd, eventParseMode),
+          toOccurrence(
+            event,
+            event.name,
+            baseStart,
+            baseEnd,
+            eventParseMode,
+            practiceNameFormat,
+          ),
         )
       }
       continue
@@ -138,7 +151,14 @@ export function expandEvents(
 
       if (occStart >= rangeStart && occStart < rangeEnd) {
         results.push(
-          toOccurrence(event, name, occStart, occEnd, eventParseMode),
+          toOccurrence(
+            event,
+            name,
+            occStart,
+            occEnd,
+            eventParseMode,
+            practiceNameFormat,
+          ),
         )
       }
 
@@ -155,8 +175,23 @@ function toOccurrence(
   start: Date,
   end: Date,
   eventParseMode: EventParseMode = 'fromName',
+  practiceNameFormat: PracticeNameFormat = DEFAULT_PRACTICE_NAME_FORMAT,
 ): Occurrence {
   const isTeamEvent = event.label === 'event'
+  if (isTeamEvent) {
+    return {
+      id: `${event._id}-${start.getTime()}`,
+      sourceId: event._id,
+      name,
+      label: event.label,
+      start,
+      end,
+      subTeams: parseEventTeams(name, eventParseMode),
+      location: parsePracticeName(name, practiceNameFormat).location,
+    }
+  }
+
+  const parsed = parsePracticeName(name, practiceNameFormat)
   return {
     id: `${event._id}-${start.getTime()}`,
     sourceId: event._id,
@@ -164,10 +199,8 @@ function toOccurrence(
     label: event.label,
     start,
     end,
-    subTeams: isTeamEvent
-      ? parseEventTeams(name, eventParseMode)
-      : parseSubTeams(name),
-    location: parseLocation(name),
+    subTeams: parsed.subTeams,
+    location: parsed.location,
   }
 }
 
@@ -176,12 +209,15 @@ export function expandPractices(
   rangeStart: Date,
   rangeEnd: Date,
   timeZone?: string,
+  practiceNameFormat: PracticeNameFormat = DEFAULT_PRACTICE_NAME_FORMAT,
 ): Occurrence[] {
   return expandEvents(
     events.filter((e) => e.label === 'practice'),
     rangeStart,
     rangeEnd,
     timeZone,
+    'fromName',
+    practiceNameFormat,
   )
 }
 

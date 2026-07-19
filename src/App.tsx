@@ -83,6 +83,7 @@ export default function App() {
       week.rangeStart,
       week.rangeEnd,
       timeZone,
+      settings.practiceNameFormat,
     )
 
     const teamEvents = settings.includeTeamEvents
@@ -92,6 +93,7 @@ export default function App() {
           week.rangeEnd,
           timeZone,
           settings.eventParseMode,
+          settings.practiceNameFormat,
         )
       : []
 
