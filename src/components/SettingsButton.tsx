@@ -1,9 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import {
-  EVENT_PARSE_MODE_OPTIONS,
   NAME_FIELD_OPTIONS,
   PRACTICE_PARSE_MODE_OPTIONS,
-  type EventParseMode,
   type NameField,
   type PracticeParseMode,
   type ScheduleSettings,
@@ -210,37 +208,6 @@ export function SettingsButton({
               </p>
             </div>
           ) : null}
-
-          <p className="settings__heading settings__heading--spaced">
-            Parse team events
-          </p>
-          <div
-            className="settings__stack"
-            role="radiogroup"
-            aria-label="Parse team events"
-          >
-            {EVENT_PARSE_MODE_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                role="radio"
-                aria-checked={settings.eventParseMode === option.value}
-                className={`settings__choice${
-                  settings.eventParseMode === option.value
-                    ? ' settings__choice--active'
-                    : ''
-                }`}
-                onClick={() =>
-                  patch({ eventParseMode: option.value as EventParseMode })
-                }
-              >
-                <span className="settings__choice-label">{option.label}</span>
-                <span className="settings__choice-hint">
-                  {option.description}
-                </span>
-              </button>
-            ))}
-          </div>
 
           <p className="settings__heading settings__heading--spaced">
             Appearance

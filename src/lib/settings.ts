@@ -1,5 +1,3 @@
-export type EventParseMode = 'fromName' | 'allGroups' | 'other'
-
 /** Roles for segments of a practice title split by the separator. */
 export type NameField = 'group' | 'location' | 'time' | 'ignore'
 
@@ -19,8 +17,6 @@ export interface ScheduleSettings {
   includeTeamEvents: boolean
   /** Fetch Commit meets (`includeMeets=true`) and show them on the week view. */
   queryMeets: boolean
-  /** How to map team-event / meet titles onto group filters. */
-  eventParseMode: EventParseMode
   /** How to parse practice titles into group + location. */
   practiceNameFormat: PracticeNameFormat
 }
@@ -36,31 +32,8 @@ export const DEFAULT_PRACTICE_NAME_FORMAT: PracticeNameFormat = {
 export const DEFAULT_SETTINGS: ScheduleSettings = {
   includeTeamEvents: false,
   queryMeets: false,
-  eventParseMode: 'fromName',
   practiceNameFormat: { ...DEFAULT_PRACTICE_NAME_FORMAT },
 }
-
-export const EVENT_PARSE_MODE_OPTIONS: Array<{
-  value: EventParseMode
-  label: string
-  description: string
-}> = [
-  {
-    value: 'fromName',
-    label: 'From name',
-    description: 'Detect Sr, Jr, Jr Prep, DEVO from the title',
-  },
-  {
-    value: 'allGroups',
-    label: 'All groups',
-    description: 'Show under every group filter',
-  },
-  {
-    value: 'other',
-    label: 'Uncategorized',
-    description: 'Bucket as Other',
-  },
-]
 
 export const PRACTICE_PARSE_MODE_OPTIONS: Array<{
   value: PracticeParseMode
@@ -85,10 +58,6 @@ export const NAME_FIELD_OPTIONS: Array<{ value: NameField; label: string }> = [
   { value: 'time', label: 'Time (ignore)' },
   { value: 'ignore', label: 'Ignore' },
 ]
-
-function isEventParseMode(value: unknown): value is EventParseMode {
-  return value === 'fromName' || value === 'allGroups' || value === 'other'
-}
 
 function isPracticeParseMode(value: unknown): value is PracticeParseMode {
   return value === 'fields' || value === 'keywords'
@@ -148,9 +117,6 @@ export function getStoredSettings(): ScheduleSettings {
         typeof parsed.queryMeets === 'boolean'
           ? parsed.queryMeets
           : DEFAULT_SETTINGS.queryMeets,
-      eventParseMode: isEventParseMode(parsed.eventParseMode)
-        ? parsed.eventParseMode
-        : DEFAULT_SETTINGS.eventParseMode,
       practiceNameFormat: normalizePracticeNameFormat(parsed.practiceNameFormat),
     }
   } catch {

@@ -1,5 +1,5 @@
 import { useState, type CSSProperties, type KeyboardEvent } from 'react'
-import { MEET_COLOR, SUB_TEAM_COLORS } from '../lib/groups'
+import { EVENT_COLOR, MEET_COLOR, SUB_TEAM_COLORS } from '../lib/groups'
 import {
   dayHeading,
   formatTimeRange,
@@ -18,18 +18,29 @@ interface Props {
   fitMode?: boolean
 }
 
+type SessionKind = 'practice' | 'meet' | 'event'
+
 function primaryTeam(teams: SubTeam[]): SubTeam {
   return teams[0] ?? 'Other'
 }
 
+function sessionKind(occ: Occurrence): SessionKind {
+  if (occ.label === 'meet') return 'meet'
+  if (occ.label === 'event') return 'event'
+  return 'practice'
+}
+
 function sessionAccent(occ: Occurrence): string {
-  if (occ.label === 'meet') return MEET_COLOR
+  const kind = sessionKind(occ)
+  if (kind === 'meet') return MEET_COLOR
+  if (kind === 'event') return EVENT_COLOR
   return SUB_TEAM_COLORS[primaryTeam(occ.subTeams)]
 }
 
-function sessionLabel(occ: Occurrence): string {
-  if (occ.label === 'meet') return 'Meet'
-  return primaryTeam(occ.subTeams)
+function sessionKindTitle(kind: SessionKind): string {
+  if (kind === 'meet') return 'Meet'
+  if (kind === 'event') return 'Event'
+  return 'Practice'
 }
 
 function groupOccurrencesByDay(week: WeekModel, occurrences: Occurrence[]) {
@@ -116,23 +127,22 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
 
               <div className="day-group__sessions">
                 {group.occurrences.map((occ) => {
-                  const isMeet = occ.label === 'meet'
-                  const team = sessionLabel(occ)
+                  const kind = sessionKind(occ)
+                  const isPractice = kind === 'practice'
+                  const team = primaryTeam(occ.subTeams)
                   const loc = occ.location
                   return (
                     <article
                       key={occ.id}
-                      className={`day-session day-session--${
-                        isMeet ? 'meet' : 'practice'
-                      }`}
+                      className={`day-session day-session--${kind}`}
                       style={
                         {
                           '--card-accent': sessionAccent(occ),
                         } as CSSProperties
                       }
                       aria-label={[
-                        isMeet ? 'Meet' : 'Practice',
-                        isMeet ? occ.name : team,
+                        sessionKindTitle(kind),
+                        isPractice ? team : occ.name,
                         loc,
                         formatTimeRangeCompact(occ.start, occ.end),
                       ]
@@ -140,13 +150,13 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                         .join(', ')}
                     >
                       <SessionKindIcon
-                        kind={isMeet ? 'meet' : 'practice'}
+                        kind={kind}
                         className="day-session__kind"
                       />
-                      {isMeet ? (
-                        <span className="day-session__name">{occ.name}</span>
-                      ) : (
+                      {isPractice ? (
                         <span className="day-session__team">{team}</span>
+                      ) : (
+                        <span className="day-session__name">{occ.name}</span>
                       )}
                       {loc ? (
                         <span className="day-session__loc">{loc}</span>
@@ -206,14 +216,13 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                   <p className="day-col__empty">No practices</p>
                 ) : (
                   dayOccs.map((occ) => {
-                    const isMeet = occ.label === 'meet'
-                    const team = sessionLabel(occ)
+                    const kind = sessionKind(occ)
+                    const isPractice = kind === 'practice'
+                    const team = primaryTeam(occ.subTeams)
                     return (
                       <article
                         key={occ.id}
-                        className={`practice-card practice-card--${
-                          isMeet ? 'meet' : 'practice'
-                        }`}
+                        className={`practice-card practice-card--${kind}`}
                         style={
                           {
                             '--card-accent': sessionAccent(occ),
@@ -222,10 +231,10 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
                       >
                         <div className="practice-card__meta">
                           <SessionKindIcon
-                            kind={isMeet ? 'meet' : 'practice'}
+                            kind={kind}
                             className="practice-card__kind"
                           />
-                          {!isMeet ? (
+                          {isPractice ? (
                             <span className="practice-card__team">{team}</span>
                           ) : null}
                           {occ.location ? (

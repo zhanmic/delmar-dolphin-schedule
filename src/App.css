@@ -584,6 +584,11 @@
   border-color: color-mix(in srgb, var(--team-meet) 40%, var(--line));
 }
 
+.practice-card--event {
+  background: color-mix(in srgb, var(--team-event) 14%, var(--surface-3));
+  border-color: color-mix(in srgb, var(--team-event) 40%, var(--line));
+}
+
 .practice-card::before {
   content: '';
   position: absolute;
@@ -598,6 +603,13 @@
 .practice-card--meet::before {
   width: 0;
   border-left: 3px dashed var(--card-accent, var(--team-meet));
+  background: none;
+  border-radius: 0;
+}
+
+.practice-card--event::before {
+  width: 0;
+  border-left: 3px dashed var(--card-accent, var(--team-event));
   background: none;
   border-radius: 0;
 }
@@ -626,6 +638,11 @@
 .practice-card--meet .practice-card__kind {
   color: var(--team-meet);
   background: color-mix(in srgb, var(--team-meet) 28%, transparent);
+}
+
+.practice-card--event .practice-card__kind {
+  color: var(--team-event);
+  background: color-mix(in srgb, var(--team-event) 28%, transparent);
 }
 
 .practice-card__team,
@@ -732,6 +749,12 @@
   background: color-mix(in srgb, var(--team-meet) 12%, transparent);
 }
 
+.day-session--event {
+  padding: 0.28rem 0.4rem 0.28rem 0.55rem;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--team-event) 12%, transparent);
+}
+
 .day-session::before {
   content: '';
   position: absolute;
@@ -752,6 +775,15 @@
   border-radius: 0;
 }
 
+.day-session--event::before {
+  top: 0.35rem;
+  bottom: 0.35rem;
+  width: 0;
+  border-left: 3px dashed var(--card-accent, var(--team-event));
+  background: none;
+  border-radius: 0;
+}
+
 .day-session__kind {
   flex: 0 0 auto;
   display: inline-flex;
@@ -768,6 +800,11 @@
 .day-session--meet .day-session__kind {
   color: var(--team-meet);
   background: color-mix(in srgb, var(--team-meet) 30%, transparent);
+}
+
+.day-session--event .day-session__kind {
+  color: var(--team-event);
+  background: color-mix(in srgb, var(--team-event) 30%, transparent);
 }
 
 .session-kind__icon {
@@ -841,6 +878,10 @@
 
 .day-session--meet .day-session__time {
   color: var(--team-meet);
+}
+
+.day-session--event .day-session__time {
+  color: var(--team-event);
 }
 
 .day-group--interactive {
@@ -985,6 +1026,11 @@
   border-color: color-mix(in srgb, var(--team-meet) 38%, var(--line));
 }
 
+.day-sheet__card--event {
+  background: color-mix(in srgb, var(--team-event) 12%, var(--surface-2));
+  border-color: color-mix(in srgb, var(--team-event) 38%, var(--line));
+}
+
 .day-sheet__card::before {
   content: '';
   position: absolute;
@@ -999,6 +1045,13 @@
 .day-sheet__card--meet::before {
   width: 0;
   border-left: 3px dashed var(--card-accent, var(--team-meet));
+  background: none;
+  border-radius: 0;
+}
+
+.day-sheet__card--event::before {
+  width: 0;
+  border-left: 3px dashed var(--card-accent, var(--team-event));
   background: none;
   border-radius: 0;
 }
@@ -1026,6 +1079,11 @@
 .day-sheet__card--meet .day-sheet__badge {
   color: var(--team-meet);
   background: color-mix(in srgb, var(--team-meet) 30%, transparent);
+}
+
+.day-sheet__card--event .day-sheet__badge {
+  color: var(--team-event);
+  background: color-mix(in srgb, var(--team-event) 30%, transparent);
 }
 
 .day-sheet__card-time {
@@ -1330,12 +1388,21 @@
     padding: 0.18rem 0.35rem 0.18rem 0.5rem;
   }
 
+  .app--fit .day-session--event {
+    padding: 0.18rem 0.35rem 0.18rem 0.5rem;
+  }
+
   .app--fit .day-session::before {
     top: 0.15rem;
     bottom: 0.15rem;
   }
 
   .app--fit .day-session--meet::before {
+    top: 0.25rem;
+    bottom: 0.25rem;
+  }
+
+  .app--fit .day-session--event::before {
     top: 0.25rem;
     bottom: 0.25rem;
   }

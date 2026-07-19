@@ -2,11 +2,9 @@ import { addDays, addMonths, addYears } from 'date-fns'
 import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 import type { CommitEvent, CommitMeet, Occurrence } from '../types'
 import { buildEventDetailFields, buildMeetDetailFields } from './detailFields'
-import { parseEventTeams } from './groups'
 import { parsePracticeName } from './nameFormat'
 import {
   DEFAULT_PRACTICE_NAME_FORMAT,
-  type EventParseMode,
   type PracticeNameFormat,
 } from './settings'
 
@@ -62,7 +60,6 @@ export function expandEvents(
   rangeStart: Date,
   rangeEnd: Date,
   timeZone: string = DEFAULT_TZ,
-  eventParseMode: EventParseMode = 'fromName',
   practiceNameFormat: PracticeNameFormat = DEFAULT_PRACTICE_NAME_FORMAT,
 ): Occurrence[] {
   const results: Occurrence[] = []
@@ -76,14 +73,7 @@ export function expandEvents(
     if (!rec) {
       if (baseStart >= rangeStart && baseStart < rangeEnd) {
         results.push(
-          toOccurrence(
-            event,
-            event.name,
-            baseStart,
-            baseEnd,
-            eventParseMode,
-            practiceNameFormat,
-          ),
+          toOccurrence(event, event.name, baseStart, baseEnd, practiceNameFormat),
         )
       }
       continue
@@ -152,14 +142,7 @@ export function expandEvents(
 
       if (occStart >= rangeStart && occStart < rangeEnd) {
         results.push(
-          toOccurrence(
-            event,
-            name,
-            occStart,
-            occEnd,
-            eventParseMode,
-            practiceNameFormat,
-          ),
+          toOccurrence(event, name, occStart, occEnd, practiceNameFormat),
         )
       }
 
@@ -175,14 +158,16 @@ function toOccurrence(
   name: string,
   start: Date,
   end: Date,
-  eventParseMode: EventParseMode = 'fromName',
   practiceNameFormat: PracticeNameFormat = DEFAULT_PRACTICE_NAME_FORMAT,
 ): Occurrence {
   const isTeamEvent = event.label === 'event'
+  // Team events are filtered via the Event chip — not mapped onto practice groups.
   const subTeams = isTeamEvent
-    ? parseEventTeams(name, eventParseMode)
+    ? []
     : parsePracticeName(name, practiceNameFormat).subTeams
-  const location = parsePracticeName(name, practiceNameFormat).location
+  const location = isTeamEvent
+    ? null
+    : parsePracticeName(name, practiceNameFormat).location
 
   return {
     id: `${event._id}-${start.getTime()}`,
@@ -216,7 +201,6 @@ export function expandPractices(
     rangeStart,
     rangeEnd,
     timeZone,
-    'fromName',
     practiceNameFormat,
   )
 }

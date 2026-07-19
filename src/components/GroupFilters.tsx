@@ -1,18 +1,27 @@
 import type { CSSProperties } from 'react'
-import { MEET_COLOR, SUB_TEAM_COLORS, SUB_TEAM_ORDER } from '../lib/groups'
+import {
+  EVENT_COLOR,
+  MEET_COLOR,
+  SUB_TEAM_COLORS,
+  SUB_TEAM_ORDER,
+} from '../lib/groups'
 import type { SubTeam } from '../types'
+
+interface KindFilter {
+  count: number
+  selected: boolean
+  onChange: (selected: boolean) => void
+}
 
 interface Props {
   available: SubTeam[]
   selected: Set<SubTeam>
   onChange: (next: Set<SubTeam>) => void
   counts: Partial<Record<SubTeam, number>>
+  /** When Include team events is on, show a separate Event chip (not a group). */
+  eventFilter?: KindFilter | null
   /** When Query meets is on, show a separate Meet chip (not a group). */
-  meetFilter?: {
-    count: number
-    selected: boolean
-    onChange: (selected: boolean) => void
-  } | null
+  meetFilter?: KindFilter | null
 }
 
 export function GroupFilters({
@@ -20,6 +29,7 @@ export function GroupFilters({
   selected,
   onChange,
   counts,
+  eventFilter = null,
   meetFilter = null,
 }: Props) {
   const teams = SUB_TEAM_ORDER.filter((t) => available.includes(t))
@@ -33,11 +43,13 @@ export function GroupFilters({
 
   function selectAll() {
     onChange(new Set(teams))
+    eventFilter?.onChange(true)
     meetFilter?.onChange(true)
   }
 
   function clearAll() {
     onChange(new Set())
+    eventFilter?.onChange(false)
     meetFilter?.onChange(false)
   }
 
@@ -79,6 +91,28 @@ export function GroupFilters({
             </button>
           )
         })}
+
+        {eventFilter ? (
+          <button
+            type="button"
+            className={`filter-chip filter-chip--event${
+              eventFilter.selected ? ' is-active' : ''
+            }`}
+            style={{ '--chip-color': EVENT_COLOR } as CSSProperties}
+            aria-pressed={eventFilter.selected}
+            aria-label={`Events, ${eventFilter.count} this week`}
+            onClick={() => eventFilter.onChange(!eventFilter.selected)}
+          >
+            <span className="filter-chip__dot" aria-hidden />
+            <span className="filter-chip__label">Event</span>
+            <span
+              className="filter-chip__count"
+              aria-label={`${eventFilter.count} this week`}
+            >
+              {eventFilter.count}
+            </span>
+          </button>
+        ) : null}
 
         {meetFilter ? (
           <button

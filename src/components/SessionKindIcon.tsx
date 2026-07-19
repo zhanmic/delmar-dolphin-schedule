@@ -9,14 +9,20 @@ function sessionKindLabel(kind: Props['kind']): string {
   return 'Practice'
 }
 
-/** Compact kind mark: swimmer for practice, medal for meet. */
+/** Compact kind mark: swimmer, medal, or calendar. */
 export function SessionKindIcon({ kind, className = '' }: Props) {
   const label = sessionKindLabel(kind)
   const classes = `session-kind${className ? ` ${className}` : ''} session-kind--${kind}`
 
   return (
     <span className={classes} title={label} aria-hidden>
-      {kind === 'meet' ? <MedalIcon /> : <SwimmerIcon />}
+      {kind === 'meet' ? (
+        <MedalIcon />
+      ) : kind === 'event' ? (
+        <CalendarIcon />
+      ) : (
+        <SwimmerIcon />
+      )}
     </span>
   )
 }
@@ -58,6 +64,26 @@ function MedalIcon() {
       <path d="M16.8 2.5h-2.8l-2 5.2 2.3 1.2 2.5-6.4Z" />
       <circle cx="12" cy="15.2" r="5.3" />
       <circle cx="12" cy="15.2" r="2" />
+    </svg>
+  )
+}
+
+function CalendarIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="session-kind__icon"
+    >
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
+      <path d="M8 3.5v3.5" />
+      <path d="M16 3.5v3.5" />
+      <path d="M3.5 10h17" />
     </svg>
   )
 }

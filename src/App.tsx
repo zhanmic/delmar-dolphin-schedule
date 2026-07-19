@@ -27,6 +27,7 @@ export default function App() {
     () => new Set(DEFAULT_SELECTED),
   )
   const [showMeets, setShowMeets] = useState(true)
+  const [showEvents, setShowEvents] = useState(true)
   const [settings, setSettings] = useState<ScheduleSettings>(() =>
     getStoredSettings(),
   )
@@ -93,7 +94,6 @@ export default function App() {
           week.rangeStart,
           week.rangeEnd,
           timeZone,
-          settings.eventParseMode,
           settings.practiceNameFormat,
         )
       : []
@@ -108,7 +108,12 @@ export default function App() {
   }, [events, meets, week, timeZone, settings])
 
   const practiceOccurrences = useMemo(
-    () => weekOccurrences.filter((o) => o.label !== 'meet'),
+    () => weekOccurrences.filter((o) => o.label === 'practice'),
+    [weekOccurrences],
+  )
+
+  const eventOccurrences = useMemo(
+    () => weekOccurrences.filter((o) => o.label === 'event'),
     [weekOccurrences],
   )
 
@@ -139,19 +144,24 @@ export default function App() {
   }, [practiceOccurrences])
 
   const filtered = useMemo(() => {
-    const practicesAndEvents = practiceOccurrences.filter((o) =>
+    const practices = practiceOccurrences.filter((o) =>
       occurrenceMatchesTeams(o.subTeams, selected),
     )
-    const meets =
+    const teamEvents =
+      settings.includeTeamEvents && showEvents ? eventOccurrences : []
+    const shownMeets =
       settings.queryMeets && showMeets ? meetOccurrences : []
-    return [...practicesAndEvents, ...meets].sort(
+    return [...practices, ...teamEvents, ...shownMeets].sort(
       (a, b) => a.start.getTime() - b.start.getTime(),
     )
   }, [
     practiceOccurrences,
+    eventOccurrences,
     meetOccurrences,
     selected,
+    settings.includeTeamEvents,
     settings.queryMeets,
+    showEvents,
     showMeets,
   ])
 
@@ -195,6 +205,15 @@ export default function App() {
               selected={selected}
               onChange={setSelected}
               counts={counts}
+              eventFilter={
+                settings.includeTeamEvents
+                  ? {
+                      count: eventOccurrences.length,
+                      selected: showEvents,
+                      onChange: setShowEvents,
+                    }
+                  : null
+              }
               meetFilter={
                 settings.queryMeets
                   ? {

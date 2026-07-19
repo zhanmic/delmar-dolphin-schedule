@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef } from 'react'
-import { SUB_TEAM_COLORS } from '../lib/groups'
+import { EVENT_COLOR, MEET_COLOR, SUB_TEAM_COLORS } from '../lib/groups'
 import { formatTimeRange } from '../lib/week'
 import type { Occurrence, SubTeam } from '../types'
 import type { CSSProperties } from 'react'
@@ -75,22 +75,26 @@ export function DayDetailSheet({
 
         <div className="day-sheet__body">
           {occurrences.map((occ) => {
-            const isMeet = occ.label === 'meet'
-            const team = isMeet ? 'Meet' : (occ.subTeams[0] ?? 'Other')
             const kind =
-              isMeet ? 'meet' : occ.label === 'event' ? 'event' : 'practice'
+              occ.label === 'meet'
+                ? 'meet'
+                : occ.label === 'event'
+                  ? 'event'
+                  : 'practice'
+            const team = occ.subTeams[0] ?? 'Other'
+            const accent =
+              kind === 'meet'
+                ? MEET_COLOR
+                : kind === 'event'
+                  ? EVENT_COLOR
+                  : SUB_TEAM_COLORS[team as SubTeam] ?? 'var(--team-other)'
             return (
               <article
                 key={occ.id}
-                className={`day-sheet__card day-sheet__card--${
-                  isMeet ? 'meet' : 'practice'
-                }`}
+                className={`day-sheet__card day-sheet__card--${kind}`}
                 style={
                   {
-                    '--card-accent':
-                      isMeet
-                        ? 'var(--team-meet)'
-                        : SUB_TEAM_COLORS[team as SubTeam] ?? 'var(--team-other)',
+                    '--card-accent': accent,
                   } as CSSProperties
                 }
               >
