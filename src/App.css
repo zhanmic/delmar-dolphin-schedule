@@ -368,6 +368,9 @@
 }
 
 .nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 2.6rem;
   height: 2.6rem;
   border-radius: 0.85rem;
@@ -375,6 +378,8 @@
   background: var(--surface-2);
   color: var(--ink);
   font-size: 1.1rem;
+  line-height: 1;
+  overflow: hidden;
   cursor: pointer;
   transition: transform 0.15s ease, background 0.15s ease;
 }
@@ -1089,7 +1094,10 @@
 
   .app--fit .week-nav {
     gap: 0.4rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid var(--line);
+    align-items: center;
   }
 
   .app--fit .week-nav__label {
@@ -1101,6 +1109,7 @@
     height: 2.25rem;
     border-radius: 0.7rem;
     font-size: 1rem;
+    flex-shrink: 0;
   }
 
   .app--fit .text-btn {
@@ -1109,7 +1118,9 @@
   }
 
   .app--fit .filters {
+    margin-top: 0.55rem;
     margin-bottom: 0.4rem;
+    padding-top: 0.1rem;
   }
 
   .app--fit .filters__header {
@@ -1122,6 +1133,7 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    padding: 0.1rem 0;
   }
 
   .app--fit .filters__list::-webkit-scrollbar {
@@ -1133,6 +1145,11 @@
     padding: 0.28rem 0.55rem 0.28rem 0.4rem;
     font-size: 0.75rem;
     gap: 0.3rem;
+  }
+
+  .app--fit .filter-chip:hover,
+  .app--fit .nav-btn:hover {
+    transform: none;
   }
 
   .app--fit .filter-chip__dot {
