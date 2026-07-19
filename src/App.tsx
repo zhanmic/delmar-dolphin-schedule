@@ -22,6 +22,15 @@ export default function App() {
   const [showEvents, setShowEvents] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 720px)')
+    const update = () => setIsMobile(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -70,7 +79,6 @@ export default function App() {
     for (const occ of weekOccurrences) {
       for (const t of occ.subTeams) present.add(t)
     }
-    // Keep stable order; always offer core groups even if empty this week
     const core: SubTeam[] = ['Sr', 'Jr', 'Jr Prep', 'DEVO']
     return SUB_TEAM_ORDER.filter(
       (t) => core.includes(t) || present.has(t),
@@ -95,8 +103,11 @@ export default function App() {
     [weekOccurrences, selected],
   )
 
+  /** One group on a phone → carpool-style fit (no page scroll). */
+  const fitMode = isMobile && selected.size === 1
+
   return (
-    <div className="app">
+    <div className={`app${fitMode ? ' app--fit' : ''}`}>
       <div className="app__glow" aria-hidden />
       <header className="hero">
         <p className="hero__eyebrow">Practice schedule</p>
@@ -141,7 +152,11 @@ export default function App() {
                 No sessions this week for the selected groups.
               </div>
             ) : (
-              <WeekSchedule week={week} occurrences={filtered} />
+              <WeekSchedule
+                week={week}
+                occurrences={filtered}
+                fitMode={fitMode}
+              />
             )}
           </>
         )}

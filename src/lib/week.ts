@@ -88,6 +88,22 @@ export function formatTimeRange(start: Date, end: Date, timeZone: string = TEAM_
   return `${format(s, 'h:mm a')} – ${format(e, 'h:mm a')}`
 }
 
+/** Compact range for dense mobile rows, e.g. 6:30–8:15 AM */
+export function formatTimeRangeCompact(
+  start: Date,
+  end: Date,
+  timeZone: string = TEAM_TZ,
+) {
+  const s = toZonedTime(start, timeZone)
+  const e = toZonedTime(end, timeZone)
+  const sPeriod = format(s, 'a')
+  const ePeriod = format(e, 'a')
+  if (sPeriod === ePeriod) {
+    return `${format(s, 'h:mm')}–${format(e, 'h:mm a')}`
+  }
+  return `${format(s, 'h:mm a')}–${format(e, 'h:mm a')}`
+}
+
 export function dayHeading(
   day: WeekModel['days'][number],
   timeZone: string = TEAM_TZ,
@@ -98,6 +114,7 @@ export function dayHeading(
   return {
     weekday: format(local, 'EEE'),
     date: format(local, 'MMM d'),
+    shortDate: format(local, 'M/d'),
     isToday: isSameDay(local, today),
     instant,
   }
