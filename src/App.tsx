@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { fetchScheduleData, fetchTeamConfig } from './api/commit'
 import { GroupFilters } from './components/GroupFilters'
+import { SettingsButton } from './components/SettingsButton'
 import { ThemeToggle } from './components/ThemeToggle'
 import { WeekNav } from './components/WeekNav'
 import { WeekSchedule } from './components/WeekSchedule'
@@ -114,6 +115,7 @@ export default function App() {
       <div className="app__glow" aria-hidden />
       <header className="hero">
         <div className="hero__top">
+          <SettingsButton />
           <h1 className="hero__brand">Delma Dolphins Schedule</h1>
           <ThemeToggle />
         </div>
