@@ -584,6 +584,11 @@
   border-color: color-mix(in srgb, var(--team-meet) 40%, var(--line));
 }
 
+.practice-card--event {
+  background: color-mix(in srgb, var(--team-event) 14%, var(--surface-3));
+  border-color: color-mix(in srgb, var(--team-event) 40%, var(--line));
+}
+
 .practice-card::before {
   content: '';
   position: absolute;
@@ -602,6 +607,13 @@
   border-radius: 0;
 }
 
+.practice-card--event::before {
+  width: 0;
+  border-left: 3px dashed var(--card-accent, var(--team-event));
+  background: none;
+  border-radius: 0;
+}
+
 .practice-card__meta {
   display: flex;
   flex-wrap: wrap;
@@ -613,25 +625,29 @@
 .practice-card__kind {
   display: inline-flex;
   align-items: center;
-  padding: 0.12rem 0.4rem;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  padding: 0;
   border-radius: 0.35rem;
-  font-size: 0.62rem;
-  font-weight: 750;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  line-height: 1.2;
   color: var(--ink);
   background: color-mix(in srgb, var(--muted) 22%, transparent);
+  flex-shrink: 0;
 }
 
 .practice-card--meet .practice-card__kind {
-  color: var(--ink);
+  color: var(--team-meet);
   background: color-mix(in srgb, var(--team-meet) 28%, transparent);
+}
+
+.practice-card--event .practice-card__kind {
+  color: var(--team-event);
+  background: color-mix(in srgb, var(--team-event) 28%, transparent);
 }
 
 .practice-card__team,
 .practice-card__loc {
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -647,7 +663,7 @@
 
 .practice-card__title {
   margin: 0;
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   font-weight: 650;
   line-height: 1.25;
   color: var(--ink);
@@ -655,7 +671,7 @@
 
 .practice-card__time {
   margin: 0.3rem 0 0;
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--cyan-soft);
 }
@@ -695,7 +711,7 @@
 }
 
 .day-group__weekday {
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--ink);
 }
@@ -705,7 +721,7 @@
 }
 
 .day-group__date {
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   color: var(--muted);
 }
 
@@ -733,6 +749,12 @@
   background: color-mix(in srgb, var(--team-meet) 12%, transparent);
 }
 
+.day-session--event {
+  padding: 0.28rem 0.4rem 0.28rem 0.55rem;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--team-event) 12%, transparent);
+}
+
 .day-session::before {
   content: '';
   position: absolute;
@@ -753,29 +775,58 @@
   border-radius: 0;
 }
 
+.day-session--event::before {
+  top: 0.35rem;
+  bottom: 0.35rem;
+  width: 0;
+  border-left: 3px dashed var(--card-accent, var(--team-event));
+  background: none;
+  border-radius: 0;
+}
+
 .day-session__kind {
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  padding: 0.08rem 0.34rem;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  padding: 0;
   border-radius: 0.3rem;
-  font-size: 0.58rem;
-  font-weight: 750;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  line-height: 1.15;
   color: var(--ink);
   background: color-mix(in srgb, var(--muted) 22%, transparent);
 }
 
 .day-session--meet .day-session__kind {
-  color: var(--ink);
+  color: var(--team-meet);
   background: color-mix(in srgb, var(--team-meet) 30%, transparent);
+}
+
+.day-session--event .day-session__kind {
+  color: var(--team-event);
+  background: color-mix(in srgb, var(--team-event) 30%, transparent);
+}
+
+.session-kind__icon {
+  width: 0.85em;
+  height: 0.85em;
+  display: block;
+}
+
+.day-session__kind .session-kind__icon {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.practice-card__kind .session-kind__icon,
+.day-sheet__badge .session-kind__icon {
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
 .day-session__team {
   flex: 0 0 auto;
-  font-size: 0.72rem;
+  font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -790,7 +841,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   font-weight: 650;
   color: var(--ink);
 }
@@ -802,7 +853,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 550;
   color: var(--muted);
 }
@@ -810,7 +861,7 @@
 .day-session--practice .day-session__loc {
   flex: 1 1 auto;
   max-width: none;
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--ink);
 }
@@ -819,7 +870,7 @@
   flex: 0 0 auto;
   margin-left: auto;
   white-space: nowrap;
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--cyan-soft);
   text-align: right;
@@ -827,6 +878,10 @@
 
 .day-session--meet .day-session__time {
   color: var(--team-meet);
+}
+
+.day-session--event .day-session__time {
+  color: var(--team-event);
 }
 
 .day-group--interactive {
@@ -971,6 +1026,11 @@
   border-color: color-mix(in srgb, var(--team-meet) 38%, var(--line));
 }
 
+.day-sheet__card--event {
+  background: color-mix(in srgb, var(--team-event) 12%, var(--surface-2));
+  border-color: color-mix(in srgb, var(--team-event) 38%, var(--line));
+}
+
 .day-sheet__card::before {
   content: '';
   position: absolute;
@@ -989,6 +1049,13 @@
   border-radius: 0;
 }
 
+.day-sheet__card--event::before {
+  width: 0;
+  border-left: 3px dashed var(--card-accent, var(--team-event));
+  background: none;
+  border-radius: 0;
+}
+
 .day-sheet__card-top {
   display: flex;
   align-items: center;
@@ -1000,19 +1067,23 @@
 .day-sheet__badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.12rem 0.42rem;
-  border-radius: 0.35rem;
-  font-size: 0.68rem;
-  font-weight: 750;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  justify-content: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  padding: 0;
+  border-radius: 0.4rem;
   color: var(--ink);
   background: color-mix(in srgb, var(--muted) 22%, transparent);
 }
 
 .day-sheet__card--meet .day-sheet__badge {
-  color: var(--ink);
+  color: var(--team-meet);
   background: color-mix(in srgb, var(--team-meet) 30%, transparent);
+}
+
+.day-sheet__card--event .day-sheet__badge {
+  color: var(--team-event);
+  background: color-mix(in srgb, var(--team-event) 30%, transparent);
 }
 
 .day-sheet__card-time {
@@ -1317,6 +1388,10 @@
     padding: 0.18rem 0.35rem 0.18rem 0.5rem;
   }
 
+  .app--fit .day-session--event {
+    padding: 0.18rem 0.35rem 0.18rem 0.5rem;
+  }
+
   .app--fit .day-session::before {
     top: 0.15rem;
     bottom: 0.15rem;
@@ -1327,37 +1402,48 @@
     bottom: 0.25rem;
   }
 
+  .app--fit .day-session--event::before {
+    top: 0.25rem;
+    bottom: 0.25rem;
+  }
+
   .app--fit .day-group__weekday {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
 
   .app--fit .day-group__date {
-    font-size: 0.68rem;
+    font-size: 0.78rem;
   }
 
   .app--fit .day-session__kind {
-    font-size: 0.52rem;
-    padding: 0.05rem 0.26rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
+  }
+
+  .app--fit .day-session__kind .session-kind__icon {
+    width: 0.82rem;
+    height: 0.82rem;
   }
 
   .app--fit .day-session__team {
-    font-size: 0.68rem;
+    font-size: 0.8rem;
   }
 
   .app--fit .day-session__name {
-    font-size: 0.78rem;
+    font-size: 0.9rem;
   }
 
   .app--fit .day-session__loc {
-    font-size: 0.72rem;
+    font-size: 0.82rem;
   }
 
   .app--fit .day-session--practice .day-session__loc {
-    font-size: 0.78rem;
+    font-size: 0.9rem;
   }
 
   .app--fit .day-session__time {
-    font-size: 0.72rem;
+    font-size: 0.82rem;
   }
 
   /* Many sessions (e.g. multi-group): keep concise day blocks, scroll the list */
