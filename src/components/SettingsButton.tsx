@@ -1,0 +1,270 @@
+import { useEffect, useId, useRef, useState } from 'react'
+import {
+  EVENT_PARSE_MODE_OPTIONS,
+  NAME_FIELD_OPTIONS,
+  PRACTICE_PARSE_MODE_OPTIONS,
+  type EventParseMode,
+  type NameField,
+  type PracticeParseMode,
+  type ScheduleSettings,
+} from '../lib/settings'
+import { useTheme } from './ThemeProvider'
+
+interface SettingsButtonProps {
+  className?: string
+  settings: ScheduleSettings
+  onChange: (next: ScheduleSettings) => void
+}
+
+export function SettingsButton({
+  className = '',
+  settings,
+  onChange,
+}: SettingsButtonProps) {
+  const { theme, setTheme } = useTheme()
+  const [open, setOpen] = useState(false)
+  const rootRef = useRef<HTMLDivElement>(null)
+  const panelId = useId()
+  const format = settings.practiceNameFormat
+
+  useEffect(() => {
+    if (!open) return
+
+    function onPointerDown(event: PointerEvent) {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setOpen(false)
+      }
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setOpen(false)
+    }
+
+    document.addEventListener('pointerdown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [open])
+
+  function patch(partial: Partial<ScheduleSettings>) {
+    onChange({ ...settings, ...partial })
+  }
+
+  function patchFormat(
+    partial: Partial<ScheduleSettings['practiceNameFormat']>,
+  ) {
+    patch({
+      practiceNameFormat: {
+        ...format,
+        ...partial,
+      },
+    })
+  }
+
+  function setFieldAt(index: number, value: NameField) {
+    const fields = [...format.fields]
+    fields[index] = value
+    patchFormat({ fields })
+  }
+
+  return (
+    <div
+      ref={rootRef}
+      className={`settings${className ? ` ${className}` : ''}`}
+    >
+      <button
+        type="button"
+        className="settings__button"
+        aria-label="Settings"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="settings__icon"
+          aria-hidden
+        >
+          <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.86 1 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+        </svg>
+      </button>
+
+      {open ? (
+        <div
+          id={panelId}
+          className="settings__panel"
+          role="dialog"
+          aria-label="Settings"
+        >
+          <p className="settings__heading">Schedule</p>
+
+          <label className="settings__switch">
+            <input
+              type="checkbox"
+              checked={settings.includeTeamEvents}
+              onChange={(e) => patch({ includeTeamEvents: e.target.checked })}
+            />
+            <span>
+              <span className="settings__switch-label">Include team events</span>
+              <span className="settings__switch-hint">
+                Calendar items like meetings, breaks, and cancellations
+              </span>
+            </span>
+          </label>
+
+          <label className="settings__switch">
+            <input
+              type="checkbox"
+              checked={settings.queryMeets}
+              onChange={(e) => patch({ queryMeets: e.target.checked })}
+            />
+            <span>
+              <span className="settings__switch-label">Query meets</span>
+              <span className="settings__switch-hint">
+                Fetch Commit meet entries and show them on the week
+              </span>
+            </span>
+          </label>
+
+          <p className="settings__heading settings__heading--spaced">
+            Practice name format
+          </p>
+          <div
+            className="settings__stack"
+            role="radiogroup"
+            aria-label="Practice name format"
+          >
+            {PRACTICE_PARSE_MODE_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                role="radio"
+                aria-checked={format.mode === option.value}
+                className={`settings__choice${
+                  format.mode === option.value ? ' settings__choice--active' : ''
+                }`}
+                onClick={() =>
+                  patchFormat({ mode: option.value as PracticeParseMode })
+                }
+              >
+                <span className="settings__choice-label">{option.label}</span>
+                <span className="settings__choice-hint">
+                  {option.description}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {format.mode === 'fields' ? (
+            <div className="settings__format">
+              <label className="settings__field">
+                <span className="settings__field-label">Separator</span>
+                <input
+                  type="text"
+                  className="settings__input"
+                  value={format.separator}
+                  maxLength={3}
+                  aria-label="Name separator"
+                  onChange={(e) => {
+                    const next = e.target.value
+                    if (next.length > 0) patchFormat({ separator: next })
+                  }}
+                />
+              </label>
+
+              <p className="settings__field-label">Field order</p>
+              <div className="settings__fields">
+                {format.fields.map((field, index) => (
+                  <label key={`${field}-${index}`} className="settings__field">
+                    <span className="settings__field-index">{index + 1}</span>
+                    <select
+                      className="settings__select"
+                      value={field}
+                      aria-label={`Field ${index + 1}`}
+                      onChange={(e) =>
+                        setFieldAt(index, e.target.value as NameField)
+                      }
+                    >
+                      {NAME_FIELD_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+              </div>
+              <p className="settings__switch-hint">
+                Example: Sr - BCHS - 5:30 → group Sr, location BCHS; time is
+                ignored (API times are used).
+              </p>
+            </div>
+          ) : null}
+
+          <p className="settings__heading settings__heading--spaced">
+            Parse team events
+          </p>
+          <div
+            className="settings__stack"
+            role="radiogroup"
+            aria-label="Parse team events"
+          >
+            {EVENT_PARSE_MODE_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                role="radio"
+                aria-checked={settings.eventParseMode === option.value}
+                className={`settings__choice${
+                  settings.eventParseMode === option.value
+                    ? ' settings__choice--active'
+                    : ''
+                }`}
+                onClick={() =>
+                  patch({ eventParseMode: option.value as EventParseMode })
+                }
+              >
+                <span className="settings__choice-label">{option.label}</span>
+                <span className="settings__choice-hint">
+                  {option.description}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <p className="settings__heading settings__heading--spaced">
+            Appearance
+          </p>
+          <div className="settings__theme" role="group" aria-label="Theme">
+            <button
+              type="button"
+              className={`settings__option${theme === 'light' ? ' settings__option--active' : ''}`}
+              aria-pressed={theme === 'light'}
+              onClick={() => setTheme('light')}
+            >
+              Day
+            </button>
+            <button
+              type="button"
+              className={`settings__option${theme === 'dark' ? ' settings__option--active' : ''}`}
+              aria-pressed={theme === 'dark'}
+              onClick={() => setTheme('dark')}
+            >
+              Night
+            </button>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  )
+}

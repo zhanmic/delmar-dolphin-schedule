@@ -17,8 +17,8 @@ export function fetchTeamConfig() {
   )
 }
 
-export function fetchScheduleData() {
+export function fetchScheduleData(includeMeets = false) {
   return getJson<WebsiteData2b>(
-    `/website-data-2b?superTeamId=${SUPER_TEAM_ID}&includeMeets=false`,
+    `/website-data-2b?superTeamId=${SUPER_TEAM_ID}&includeMeets=${includeMeets ? 'true' : 'false'}`,
   )
 }

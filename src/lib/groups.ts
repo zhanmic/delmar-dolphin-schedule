@@ -1,3 +1,4 @@
+import type { EventParseMode } from './settings'
 import type { SubTeam } from '../types'
 
 export const SUB_TEAM_ORDER: SubTeam[] = [
@@ -8,6 +9,8 @@ export const SUB_TEAM_ORDER: SubTeam[] = [
   'Sr/Jr',
   'Other',
 ]
+
+const ALL_CORE_TEAMS: SubTeam[] = ['Sr', 'Jr', 'Jr Prep', 'DEVO']
 
 export const SUB_TEAM_COLORS: Record<SubTeam, string> = {
   Sr: 'var(--team-sr)',
@@ -31,7 +34,7 @@ export function parseSubTeams(name: string): SubTeam[] {
     return ['Jr Prep']
   }
 
-  if (/\bdevo\b/.test(lower)) {
+  if (/\bdevo\b/.test(lower) || /\bdevelopmental\b/.test(lower)) {
     return ['DEVO']
   }
 
@@ -43,6 +46,16 @@ export function parseSubTeams(name: string): SubTeam[] {
   if (hasJr) return ['Jr']
 
   return ['Other']
+}
+
+/** Map team-event / meet titles onto groups using the configured parse mode. */
+export function parseEventTeams(
+  name: string,
+  mode: EventParseMode = 'fromName',
+): SubTeam[] {
+  if (mode === 'allGroups') return [...ALL_CORE_TEAMS]
+  if (mode === 'other') return ['Other']
+  return parseSubTeams(name)
 }
 
 const LOCATION_PATTERNS: Array<{ match: RegExp; label: string }> = [

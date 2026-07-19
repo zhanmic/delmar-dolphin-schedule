@@ -27,8 +27,22 @@ export interface CommitEvent {
   superTeamId?: string
 }
 
+export interface CommitMeet {
+  _id: string
+  titleEventsFile?: string | null
+  userTitle?: string | null
+  startDateTime: string
+  endDateTime: string
+  locationDetails?: string | null
+  city?: string | null
+  state?: string | null
+  status?: string
+  course?: string
+}
+
 export interface WebsiteData2b {
   events: CommitEvent[]
+  meets?: CommitMeet[]
   programs?: unknown[]
   coachesAndAdmins?: unknown[]
   clubs?: unknown[]

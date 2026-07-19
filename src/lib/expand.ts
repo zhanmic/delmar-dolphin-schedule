@@ -1,7 +1,13 @@
 import { addDays, addMonths, addYears } from 'date-fns'
 import { fromZonedTime, toZonedTime } from 'date-fns-tz'
-import type { CommitEvent, Occurrence } from '../types'
-import { parseLocation, parseSubTeams } from './groups'
+import type { CommitEvent, CommitMeet, Occurrence } from '../types'
+import { parseEventTeams } from './groups'
+import { parsePracticeName } from './nameFormat'
+import {
+  DEFAULT_PRACTICE_NAME_FORMAT,
+  type EventParseMode,
+  type PracticeNameFormat,
+} from './settings'
 
 const DEFAULT_TZ = 'America/New_York'
 
@@ -55,6 +61,8 @@ export function expandEvents(
   rangeStart: Date,
   rangeEnd: Date,
   timeZone: string = DEFAULT_TZ,
+  eventParseMode: EventParseMode = 'fromName',
+  practiceNameFormat: PracticeNameFormat = DEFAULT_PRACTICE_NAME_FORMAT,
 ): Occurrence[] {
   const results: Occurrence[] = []
 
@@ -66,7 +74,16 @@ export function expandEvents(
 
     if (!rec) {
       if (baseStart >= rangeStart && baseStart < rangeEnd) {
-        results.push(toOccurrence(event, event.name, baseStart, baseEnd))
+        results.push(
+          toOccurrence(
+            event,
+            event.name,
+            baseStart,
+            baseEnd,
+            eventParseMode,
+            practiceNameFormat,
+          ),
+        )
       }
       continue
     }
@@ -133,7 +150,16 @@ export function expandEvents(
       }
 
       if (occStart >= rangeStart && occStart < rangeEnd) {
-        results.push(toOccurrence(event, name, occStart, occEnd))
+        results.push(
+          toOccurrence(
+            event,
+            name,
+            occStart,
+            occEnd,
+            eventParseMode,
+            practiceNameFormat,
+          ),
+        )
       }
 
       cursor = advanceByPeriod(cursor, rec.period)
@@ -148,7 +174,24 @@ function toOccurrence(
   name: string,
   start: Date,
   end: Date,
+  eventParseMode: EventParseMode = 'fromName',
+  practiceNameFormat: PracticeNameFormat = DEFAULT_PRACTICE_NAME_FORMAT,
 ): Occurrence {
+  const isTeamEvent = event.label === 'event'
+  if (isTeamEvent) {
+    return {
+      id: `${event._id}-${start.getTime()}`,
+      sourceId: event._id,
+      name,
+      label: event.label,
+      start,
+      end,
+      subTeams: parseEventTeams(name, eventParseMode),
+      location: parsePracticeName(name, practiceNameFormat).location,
+    }
+  }
+
+  const parsed = parsePracticeName(name, practiceNameFormat)
   return {
     id: `${event._id}-${start.getTime()}`,
     sourceId: event._id,
@@ -156,8 +199,8 @@ function toOccurrence(
     label: event.label,
     start,
     end,
-    subTeams: parseSubTeams(name),
-    location: parseLocation(name),
+    subTeams: parsed.subTeams,
+    location: parsed.location,
   }
 }
 
@@ -166,11 +209,52 @@ export function expandPractices(
   rangeStart: Date,
   rangeEnd: Date,
   timeZone?: string,
+  practiceNameFormat: PracticeNameFormat = DEFAULT_PRACTICE_NAME_FORMAT,
 ): Occurrence[] {
   return expandEvents(
     events.filter((e) => e.label === 'practice'),
     rangeStart,
     rangeEnd,
     timeZone,
+    'fromName',
+    practiceNameFormat,
   )
+}
+
+/** Convert Commit meets into week occurrences (one row per meet start). */
+export function expandMeets(
+  meets: CommitMeet[],
+  rangeStart: Date,
+  rangeEnd: Date,
+  eventParseMode: EventParseMode = 'fromName',
+): Occurrence[] {
+  const results: Occurrence[] = []
+
+  for (const meet of meets) {
+    const start = parseUtc(meet.startDateTime)
+    const end = parseUtc(meet.endDateTime)
+    if (start < rangeStart || start >= rangeEnd) continue
+
+    const name =
+      (meet.userTitle && meet.userTitle.trim()) ||
+      (meet.titleEventsFile && meet.titleEventsFile.trim()) ||
+      'Meet'
+    const location =
+      (meet.locationDetails && meet.locationDetails.trim()) ||
+      [meet.city, meet.state].filter(Boolean).join(', ') ||
+      null
+
+    results.push({
+      id: `meet-${meet._id}-${start.getTime()}`,
+      sourceId: meet._id,
+      name,
+      label: 'meet',
+      start,
+      end,
+      subTeams: parseEventTeams(name, eventParseMode),
+      location,
+    })
+  }
+
+  return results.sort((a, b) => a.start.getTime() - b.start.getTime())
 }
