@@ -116,10 +116,10 @@ export function parsePracticeNameFields(
   const groupText = mapped.group ?? workingParts[0] ?? name
   const locationRaw = mapped.location ?? null
 
+  // Keep the full location segment (e.g. "Elm Ave Long Course") rather than
+  // collapsing it to a canonical pool label, so descriptors aren't filtered out.
   const cleaned = locationRaw ? cleanLocationText(locationRaw) : ''
-  const locationFromField = cleaned
-    ? parseLocation(cleaned) ?? cleaned
-    : null
+  const locationFromField = cleaned || null
 
   return {
     subTeams: parseSubTeams(groupText),
