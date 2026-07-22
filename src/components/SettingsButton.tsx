@@ -144,7 +144,7 @@ export function SettingsButton({
           </label>
 
           <p className="settings__heading settings__heading--spaced">
-            Default groups
+            Defaults on load
           </p>
           <p className="settings__switch-hint">
             Selected on page load. Change here, then reload to apply.
@@ -170,6 +170,50 @@ export function SettingsButton({
                 </button>
               )
             })}
+          </div>
+          <div
+            className="settings__groups"
+            role="group"
+            aria-label="Default event and meet filters"
+          >
+            <button
+              type="button"
+              className={`settings__group-chip${
+                settings.defaultShowEvents
+                  ? ' settings__group-chip--active'
+                  : ''
+              }${
+                settings.includeTeamEvents
+                  ? ''
+                  : ' settings__group-chip--disabled'
+              }`}
+              aria-pressed={settings.defaultShowEvents}
+              aria-disabled={!settings.includeTeamEvents}
+              disabled={!settings.includeTeamEvents}
+              onClick={() =>
+                patch({ defaultShowEvents: !settings.defaultShowEvents })
+              }
+            >
+              Event
+            </button>
+            <button
+              type="button"
+              className={`settings__group-chip${
+                settings.defaultShowMeets
+                  ? ' settings__group-chip--active'
+                  : ''
+              }${
+                settings.queryMeets ? '' : ' settings__group-chip--disabled'
+              }`}
+              aria-pressed={settings.defaultShowMeets}
+              aria-disabled={!settings.queryMeets}
+              disabled={!settings.queryMeets}
+              onClick={() =>
+                patch({ defaultShowMeets: !settings.defaultShowMeets })
+              }
+            >
+              Meet
+            </button>
           </div>
 
           <p className="settings__heading settings__heading--spaced">

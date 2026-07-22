@@ -27,8 +27,12 @@ export default function App() {
   const [selected, setSelected] = useState<Set<SubTeam>>(
     () => new Set(getStoredSettings().defaultGroups),
   )
-  const [showMeets, setShowMeets] = useState(false)
-  const [showEvents, setShowEvents] = useState(false)
+  const [showMeets, setShowMeets] = useState(
+    () => getStoredSettings().defaultShowMeets,
+  )
+  const [showEvents, setShowEvents] = useState(
+    () => getStoredSettings().defaultShowEvents,
+  )
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)

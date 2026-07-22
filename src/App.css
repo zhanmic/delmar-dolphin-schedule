@@ -360,6 +360,12 @@
   background: color-mix(in srgb, var(--cyan) 14%, transparent);
 }
 
+.settings__group-chip--disabled,
+.settings__group-chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .hero__brand {
   margin: 0;
   font-family: var(--font-display);

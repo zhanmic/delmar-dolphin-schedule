@@ -22,6 +22,10 @@ export interface ScheduleSettings {
   queryMeets: boolean
   /** Groups selected by default when the page loads. */
   defaultGroups: SubTeam[]
+  /** Whether the Event filter chip is selected on page load. */
+  defaultShowEvents: boolean
+  /** Whether the Meet filter chip is selected on page load. */
+  defaultShowMeets: boolean
   /** How to parse practice titles into group + location. */
   practiceNameFormat: PracticeNameFormat
 }
@@ -37,9 +41,13 @@ export const DEFAULT_PRACTICE_NAME_FORMAT: PracticeNameFormat = {
 export const DEFAULT_GROUPS: SubTeam[] = ['Sr']
 
 export const DEFAULT_SETTINGS: ScheduleSettings = {
-  includeTeamEvents: false,
-  queryMeets: false,
+  // On by default so Event / Meet filter chips stay visible in the week view.
+  includeTeamEvents: true,
+  queryMeets: true,
   defaultGroups: [...DEFAULT_GROUPS],
+  // Chips are available, but not selected until the user opts in (or changes defaults).
+  defaultShowEvents: false,
+  defaultShowMeets: false,
   practiceNameFormat: { ...DEFAULT_PRACTICE_NAME_FORMAT },
 }
 
@@ -127,16 +135,32 @@ export function getStoredSettings(): ScheduleSettings {
     const raw = localStorage.getItem(SETTINGS_KEY)
     if (!raw) return cloneSettings()
     const parsed = JSON.parse(raw) as Partial<ScheduleSettings>
+    // Older saves had Event/Meet off by default and omitted these keys. On first
+    // load of the new defaults UI, turn the Event/Meet chips back on.
+    const hasKindDefaults =
+      typeof parsed.defaultShowEvents === 'boolean' ||
+      typeof parsed.defaultShowMeets === 'boolean'
+
     return {
-      includeTeamEvents:
-        typeof parsed.includeTeamEvents === 'boolean'
+      includeTeamEvents: hasKindDefaults
+        ? typeof parsed.includeTeamEvents === 'boolean'
           ? parsed.includeTeamEvents
-          : DEFAULT_SETTINGS.includeTeamEvents,
-      queryMeets:
-        typeof parsed.queryMeets === 'boolean'
+          : DEFAULT_SETTINGS.includeTeamEvents
+        : true,
+      queryMeets: hasKindDefaults
+        ? typeof parsed.queryMeets === 'boolean'
           ? parsed.queryMeets
-          : DEFAULT_SETTINGS.queryMeets,
+          : DEFAULT_SETTINGS.queryMeets
+        : true,
       defaultGroups: normalizeDefaultGroups(parsed.defaultGroups),
+      defaultShowEvents:
+        typeof parsed.defaultShowEvents === 'boolean'
+          ? parsed.defaultShowEvents
+          : DEFAULT_SETTINGS.defaultShowEvents,
+      defaultShowMeets:
+        typeof parsed.defaultShowMeets === 'boolean'
+          ? parsed.defaultShowMeets
+          : DEFAULT_SETTINGS.defaultShowMeets,
       practiceNameFormat: normalizePracticeNameFormat(parsed.practiceNameFormat),
     }
   } catch {
