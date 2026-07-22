@@ -163,7 +163,7 @@ export function GroupFilters({
             {weekCalendar ? (
               <AddToCalendarButton
                 occurrences={weekCalendar.occurrences}
-                label="Add week to Calendar"
+                label="Add to calendar"
                 calendarName={weekCalendar.calendarName}
                 className="filters__cal"
               />
