@@ -1,3 +1,6 @@
+import { SUB_TEAM_ORDER } from './groups'
+import type { SubTeam } from '../types'
+
 /** Roles for segments of a practice title split by the separator. */
 export type NameField = 'group' | 'location' | 'time' | 'ignore'
 
@@ -17,6 +20,12 @@ export interface ScheduleSettings {
   includeTeamEvents: boolean
   /** Fetch Commit meets (`includeMeets=true`) and show them on the week view. */
   queryMeets: boolean
+  /** Groups selected by default when the page loads. */
+  defaultGroups: SubTeam[]
+  /** Whether the Event filter chip is selected on page load. */
+  defaultShowEvents: boolean
+  /** Whether the Meet filter chip is selected on page load. */
+  defaultShowMeets: boolean
   /** How to parse practice titles into group + location. */
   practiceNameFormat: PracticeNameFormat
 }
@@ -29,9 +38,16 @@ export const DEFAULT_PRACTICE_NAME_FORMAT: PracticeNameFormat = {
   fields: ['group', 'location', 'time'],
 }
 
+export const DEFAULT_GROUPS: SubTeam[] = ['Sr']
+
 export const DEFAULT_SETTINGS: ScheduleSettings = {
-  includeTeamEvents: false,
-  queryMeets: false,
+  // On by default so Event / Meet filter chips stay visible in the week view.
+  includeTeamEvents: true,
+  queryMeets: true,
+  defaultGroups: [...DEFAULT_GROUPS],
+  // Chips are available, but not selected until the user opts in (or changes defaults).
+  defaultShowEvents: false,
+  defaultShowMeets: false,
   practiceNameFormat: { ...DEFAULT_PRACTICE_NAME_FORMAT },
 }
 
@@ -72,6 +88,14 @@ function isNameField(value: unknown): value is NameField {
   )
 }
 
+function normalizeDefaultGroups(value: unknown): SubTeam[] {
+  if (!Array.isArray(value)) return [...DEFAULT_GROUPS]
+  // Preserve empty selection — empty means no groups selected on load.
+  if (value.length === 0) return []
+  const groups = SUB_TEAM_ORDER.filter((team) => value.includes(team))
+  return groups.length ? groups : [...DEFAULT_GROUPS]
+}
+
 function normalizePracticeNameFormat(
   value: unknown,
 ): PracticeNameFormat {
@@ -94,36 +118,53 @@ function normalizePracticeNameFormat(
   }
 }
 
-export function getStoredSettings(): ScheduleSettings {
-  if (typeof window === 'undefined') return {
-    ...DEFAULT_SETTINGS,
-    practiceNameFormat: { ...DEFAULT_PRACTICE_NAME_FORMAT },
+function cloneSettings(settings: ScheduleSettings = DEFAULT_SETTINGS): ScheduleSettings {
+  return {
+    ...settings,
+    defaultGroups: [...settings.defaultGroups],
+    practiceNameFormat: {
+      ...settings.practiceNameFormat,
+      fields: [...settings.practiceNameFormat.fields],
+    },
   }
+}
+
+export function getStoredSettings(): ScheduleSettings {
+  if (typeof window === 'undefined') return cloneSettings()
   try {
     const raw = localStorage.getItem(SETTINGS_KEY)
-    if (!raw) {
-      return {
-        ...DEFAULT_SETTINGS,
-        practiceNameFormat: { ...DEFAULT_PRACTICE_NAME_FORMAT },
-      }
-    }
+    if (!raw) return cloneSettings()
     const parsed = JSON.parse(raw) as Partial<ScheduleSettings>
+    // Older saves had Event/Meet off by default and omitted these keys. On first
+    // load of the new defaults UI, turn the Event/Meet chips back on.
+    const hasKindDefaults =
+      typeof parsed.defaultShowEvents === 'boolean' ||
+      typeof parsed.defaultShowMeets === 'boolean'
+
     return {
-      includeTeamEvents:
-        typeof parsed.includeTeamEvents === 'boolean'
+      includeTeamEvents: hasKindDefaults
+        ? typeof parsed.includeTeamEvents === 'boolean'
           ? parsed.includeTeamEvents
-          : DEFAULT_SETTINGS.includeTeamEvents,
-      queryMeets:
-        typeof parsed.queryMeets === 'boolean'
+          : DEFAULT_SETTINGS.includeTeamEvents
+        : true,
+      queryMeets: hasKindDefaults
+        ? typeof parsed.queryMeets === 'boolean'
           ? parsed.queryMeets
-          : DEFAULT_SETTINGS.queryMeets,
+          : DEFAULT_SETTINGS.queryMeets
+        : true,
+      defaultGroups: normalizeDefaultGroups(parsed.defaultGroups),
+      defaultShowEvents:
+        typeof parsed.defaultShowEvents === 'boolean'
+          ? parsed.defaultShowEvents
+          : DEFAULT_SETTINGS.defaultShowEvents,
+      defaultShowMeets:
+        typeof parsed.defaultShowMeets === 'boolean'
+          ? parsed.defaultShowMeets
+          : DEFAULT_SETTINGS.defaultShowMeets,
       practiceNameFormat: normalizePracticeNameFormat(parsed.practiceNameFormat),
     }
   } catch {
-    return {
-      ...DEFAULT_SETTINGS,
-      practiceNameFormat: { ...DEFAULT_PRACTICE_NAME_FORMAT },
-    }
+    return cloneSettings()
   }
 }
 

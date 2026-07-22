@@ -16,20 +16,22 @@ import { getWeekModel, shiftWeek, TEAM_TZ } from './lib/week'
 import type { CommitEvent, CommitMeet, SubTeam } from './types'
 import './App.css'
 
-const DEFAULT_SELECTED: SubTeam[] = ['Sr']
-
 export default function App() {
   const [anchor, setAnchor] = useState(() => new Date())
   const [events, setEvents] = useState<CommitEvent[]>([])
   const [meets, setMeets] = useState<CommitMeet[]>([])
   const [timeZone, setTimeZone] = useState(TEAM_TZ)
-  const [selected, setSelected] = useState<Set<SubTeam>>(
-    () => new Set(DEFAULT_SELECTED),
-  )
-  const [showMeets, setShowMeets] = useState(false)
-  const [showEvents, setShowEvents] = useState(false)
   const [settings, setSettings] = useState<ScheduleSettings>(() =>
     getStoredSettings(),
+  )
+  const [selected, setSelected] = useState<Set<SubTeam>>(
+    () => new Set(getStoredSettings().defaultGroups),
+  )
+  const [showMeets, setShowMeets] = useState(
+    () => getStoredSettings().defaultShowMeets,
+  )
+  const [showEvents, setShowEvents] = useState(
+    () => getStoredSettings().defaultShowEvents,
   )
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
