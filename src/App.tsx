@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { fetchScheduleData, fetchTeamConfig } from './api/commit'
 import { GroupFilters } from './components/GroupFilters'
 import { SettingsButton } from './components/SettingsButton'
+import { ShareButton } from './components/ShareButton'
 import { ThemeToggle } from './components/ThemeToggle'
 import { WeekNav } from './components/WeekNav'
 import { WeekSchedule } from './components/WeekSchedule'
@@ -179,7 +180,10 @@ export default function App() {
       <div className="app__glow" aria-hidden />
       <header className="hero">
         <div className="hero__top">
-          <SettingsButton settings={settings} onChange={setSettings} />
+          <div className="hero__controls">
+            <SettingsButton settings={settings} onChange={setSettings} />
+            <ShareButton />
+          </div>
           <h1 className="hero__brand">Delma Dolphins Schedule</h1>
           <div className="hero__actions">
             <a
