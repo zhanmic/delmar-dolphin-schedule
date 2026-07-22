@@ -23,7 +23,7 @@ interface Props {
   eventFilter?: KindFilter | null
   /** When Query meets is on, show a separate Meet chip (not a group). */
   meetFilter?: KindFilter | null
-  /** Selected week sessions for the right-aligned Add week to Calendar control. */
+  /** Selected week sessions for the right-aligned Add to calendar control. */
   weekCalendar?: {
     occurrences: Occurrence[]
     calendarName: string
