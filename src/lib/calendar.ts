@@ -125,19 +125,78 @@ export function calendarFilenameForOccurrences(
   return `delmar-week-${occurrences.length}-sessions.ics`
 }
 
+function isAppleTouchDevice(): boolean {
+  if (typeof navigator === 'undefined') return false
+  const ua = navigator.userAgent
+  if (/iPad|iPhone|iPod/i.test(ua)) return true
+  // iPadOS 13+ desktop UA with touch
+  return navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1
+}
+
 /**
- * Offer an .ics file to the user.
- * Prefers the Web Share sheet with a file (great on iPhone), then falls back
- * to downloading the calendar file for Calendar/Files apps.
+ * On iPhone/iPad Safari, open the .ics so the native “Add to Calendar”
+ * sheet appears. Avoid the `download` attribute — that only saves a file.
+ */
+function openIcsInAppleCalendar(ics: string): boolean {
+  // Safari treats an inline text/calendar data URL as “Add to Calendar”.
+  // encodeURIComponent keeps newlines/commas valid in the URL.
+  const dataUrl =
+    'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics)
+
+  // Hidden iframe keeps the schedule page in place while Safari
+  // hands the calendar file to the system Add sheet.
+  try {
+    const frame = document.createElement('iframe')
+    frame.style.display = 'none'
+    frame.setAttribute('aria-hidden', 'true')
+    frame.src = dataUrl
+    document.body.appendChild(frame)
+    window.setTimeout(() => {
+      frame.remove()
+    }, 4000)
+    return true
+  } catch {
+    // Fall through to navigation handoff.
+  }
+
+  // Same-tab handoff — Calendar sheet still appears; Back returns here.
+  window.location.assign(dataUrl)
+  return true
+}
+
+function downloadIcsFile(ics: string, filename: string): void {
+  const url = URL.createObjectURL(
+    new Blob([ics], { type: 'text/calendar;charset=utf-8' }),
+  )
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = filename
+  anchor.rel = 'noopener'
+  document.body.appendChild(anchor)
+  anchor.click()
+  anchor.remove()
+  window.setTimeout(() => URL.revokeObjectURL(url), 2000)
+}
+
+/**
+ * Offer an .ics calendar to the user.
+ * - iPhone/iPad: open inline so Safari shows Add to Calendar (not a download)
+ * - Other browsers: share sheet with file when available, else download
  */
 export async function offerCalendarFile(
   occurrences: Occurrence[],
   calendarName = 'Delma Dolphins Schedule',
-): Promise<'shared' | 'downloaded' | 'cancelled' | 'empty'> {
+): Promise<'opened' | 'shared' | 'downloaded' | 'cancelled' | 'empty'> {
   if (occurrences.length === 0) return 'empty'
 
   const ics = buildIcsCalendar(occurrences, calendarName)
   const filename = calendarFilenameForOccurrences(occurrences)
+
+  if (isAppleTouchDevice()) {
+    openIcsInAppleCalendar(ics)
+    return 'opened'
+  }
+
   const file = new File([ics], filename, { type: 'text/calendar' })
 
   try {
@@ -161,16 +220,6 @@ export async function offerCalendarFile(
     }
   }
 
-  const url = URL.createObjectURL(
-    new Blob([ics], { type: 'text/calendar;charset=utf-8' }),
-  )
-  const anchor = document.createElement('a')
-  anchor.href = url
-  anchor.download = filename
-  anchor.rel = 'noopener'
-  document.body.appendChild(anchor)
-  anchor.click()
-  anchor.remove()
-  window.setTimeout(() => URL.revokeObjectURL(url), 2000)
+  downloadIcsFile(ics, filename)
   return 'downloaded'
 }
