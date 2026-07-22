@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import { SUB_TEAM_ORDER } from '../lib/groups'
 import {
   NAME_FIELD_OPTIONS,
   PRACTICE_PARSE_MODE_OPTIONS,
@@ -6,7 +7,7 @@ import {
   type PracticeParseMode,
   type ScheduleSettings,
 } from '../lib/settings'
-import { useTheme } from './ThemeProvider'
+import type { SubTeam } from '../types'
 
 interface SettingsButtonProps {
   className?: string
@@ -19,7 +20,6 @@ export function SettingsButton({
   settings,
   onChange,
 }: SettingsButtonProps) {
-  const { theme, setTheme } = useTheme()
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
   const panelId = useId()
@@ -65,6 +65,15 @@ export function SettingsButton({
     const fields = [...format.fields]
     fields[index] = value
     patchFormat({ fields })
+  }
+
+  function toggleDefaultGroup(team: SubTeam) {
+    const selected = new Set(settings.defaultGroups)
+    if (selected.has(team)) selected.delete(team)
+    else selected.add(team)
+    patch({
+      defaultGroups: SUB_TEAM_ORDER.filter((t) => selected.has(t)),
+    })
   }
 
   return (
@@ -133,6 +142,35 @@ export function SettingsButton({
               </span>
             </span>
           </label>
+
+          <p className="settings__heading settings__heading--spaced">
+            Default groups
+          </p>
+          <p className="settings__switch-hint">
+            Selected on page load. Change here, then reload to apply.
+          </p>
+          <div
+            className="settings__groups"
+            role="group"
+            aria-label="Default groups"
+          >
+            {SUB_TEAM_ORDER.map((team) => {
+              const active = settings.defaultGroups.includes(team)
+              return (
+                <button
+                  key={team}
+                  type="button"
+                  className={`settings__group-chip${
+                    active ? ' settings__group-chip--active' : ''
+                  }`}
+                  aria-pressed={active}
+                  onClick={() => toggleDefaultGroup(team)}
+                >
+                  {team}
+                </button>
+              )
+            })}
+          </div>
 
           <p className="settings__heading settings__heading--spaced">
             Practice name format
@@ -208,28 +246,6 @@ export function SettingsButton({
               </p>
             </div>
           ) : null}
-
-          <p className="settings__heading settings__heading--spaced">
-            Appearance
-          </p>
-          <div className="settings__theme" role="group" aria-label="Theme">
-            <button
-              type="button"
-              className={`settings__option${theme === 'light' ? ' settings__option--active' : ''}`}
-              aria-pressed={theme === 'light'}
-              onClick={() => setTheme('light')}
-            >
-              Day
-            </button>
-            <button
-              type="button"
-              className={`settings__option${theme === 'dark' ? ' settings__option--active' : ''}`}
-              aria-pressed={theme === 'dark'}
-              onClick={() => setTheme('dark')}
-            >
-              Night
-            </button>
-          </div>
         </div>
       ) : null}
     </div>

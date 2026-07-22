@@ -326,21 +326,22 @@
   outline-offset: 1px;
 }
 
-.settings__theme {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.35rem;
+.settings__groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
 }
 
-.settings__option {
+.settings__group-chip {
   border: 1px solid var(--line);
-  border-radius: 0.65rem;
+  border-radius: 999px;
   background: transparent;
   color: var(--muted);
   font: inherit;
   font-size: 0.85rem;
-  font-weight: 600;
-  padding: 0.45rem 0.55rem;
+  font-weight: 700;
+  padding: 0.35rem 0.7rem;
   cursor: pointer;
   transition:
     background 0.15s ease,
@@ -348,12 +349,12 @@
     color 0.15s ease;
 }
 
-.settings__option:hover {
+.settings__group-chip:hover {
   color: var(--ink);
   border-color: color-mix(in srgb, var(--cyan) 40%, var(--line));
 }
 
-.settings__option--active {
+.settings__group-chip--active {
   color: var(--ink);
   border-color: color-mix(in srgb, var(--cyan) 55%, var(--line));
   background: color-mix(in srgb, var(--cyan) 14%, transparent);
@@ -512,13 +513,17 @@
   background: var(--surface-2);
   color: var(--muted);
   border-radius: 999px;
-  padding: 0.4rem 0.75rem 0.4rem 0.55rem;
+  padding: 0.45rem 0.85rem 0.45rem 0.6rem;
   font: inherit;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 700;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease,
     transform 0.15s ease;
+}
+
+.filter-chip__label {
+  font-weight: 800;
 }
 
 .filter-chip__dot {
@@ -1509,8 +1514,9 @@
 
   .app--fit .filter-chip {
     flex-shrink: 0;
-    padding: 0.28rem 0.55rem 0.28rem 0.4rem;
-    font-size: 0.75rem;
+    padding: 0.32rem 0.65rem 0.32rem 0.45rem;
+    font-size: 0.9rem;
+    font-weight: 700;
     gap: 0.3rem;
   }
 

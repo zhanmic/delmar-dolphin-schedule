@@ -1,3 +1,6 @@
+import { SUB_TEAM_ORDER } from './groups'
+import type { SubTeam } from '../types'
+
 /** Roles for segments of a practice title split by the separator. */
 export type NameField = 'group' | 'location' | 'time' | 'ignore'
 
@@ -17,6 +20,8 @@ export interface ScheduleSettings {
   includeTeamEvents: boolean
   /** Fetch Commit meets (`includeMeets=true`) and show them on the week view. */
   queryMeets: boolean
+  /** Groups selected by default when the page loads. */
+  defaultGroups: SubTeam[]
   /** How to parse practice titles into group + location. */
   practiceNameFormat: PracticeNameFormat
 }
@@ -29,9 +34,12 @@ export const DEFAULT_PRACTICE_NAME_FORMAT: PracticeNameFormat = {
   fields: ['group', 'location', 'time'],
 }
 
+export const DEFAULT_GROUPS: SubTeam[] = ['Sr']
+
 export const DEFAULT_SETTINGS: ScheduleSettings = {
   includeTeamEvents: false,
   queryMeets: false,
+  defaultGroups: [...DEFAULT_GROUPS],
   practiceNameFormat: { ...DEFAULT_PRACTICE_NAME_FORMAT },
 }
 
@@ -72,6 +80,14 @@ function isNameField(value: unknown): value is NameField {
   )
 }
 
+function normalizeDefaultGroups(value: unknown): SubTeam[] {
+  if (!Array.isArray(value)) return [...DEFAULT_GROUPS]
+  // Preserve empty selection — empty means no groups selected on load.
+  if (value.length === 0) return []
+  const groups = SUB_TEAM_ORDER.filter((team) => value.includes(team))
+  return groups.length ? groups : [...DEFAULT_GROUPS]
+}
+
 function normalizePracticeNameFormat(
   value: unknown,
 ): PracticeNameFormat {
@@ -94,19 +110,22 @@ function normalizePracticeNameFormat(
   }
 }
 
-export function getStoredSettings(): ScheduleSettings {
-  if (typeof window === 'undefined') return {
-    ...DEFAULT_SETTINGS,
-    practiceNameFormat: { ...DEFAULT_PRACTICE_NAME_FORMAT },
+function cloneSettings(settings: ScheduleSettings = DEFAULT_SETTINGS): ScheduleSettings {
+  return {
+    ...settings,
+    defaultGroups: [...settings.defaultGroups],
+    practiceNameFormat: {
+      ...settings.practiceNameFormat,
+      fields: [...settings.practiceNameFormat.fields],
+    },
   }
+}
+
+export function getStoredSettings(): ScheduleSettings {
+  if (typeof window === 'undefined') return cloneSettings()
   try {
     const raw = localStorage.getItem(SETTINGS_KEY)
-    if (!raw) {
-      return {
-        ...DEFAULT_SETTINGS,
-        practiceNameFormat: { ...DEFAULT_PRACTICE_NAME_FORMAT },
-      }
-    }
+    if (!raw) return cloneSettings()
     const parsed = JSON.parse(raw) as Partial<ScheduleSettings>
     return {
       includeTeamEvents:
@@ -117,13 +136,11 @@ export function getStoredSettings(): ScheduleSettings {
         typeof parsed.queryMeets === 'boolean'
           ? parsed.queryMeets
           : DEFAULT_SETTINGS.queryMeets,
+      defaultGroups: normalizeDefaultGroups(parsed.defaultGroups),
       practiceNameFormat: normalizePracticeNameFormat(parsed.practiceNameFormat),
     }
   } catch {
-    return {
-      ...DEFAULT_SETTINGS,
-      practiceNameFormat: { ...DEFAULT_PRACTICE_NAME_FORMAT },
-    }
+    return cloneSettings()
   }
 }
 
