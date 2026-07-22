@@ -3,6 +3,7 @@ import { EVENT_COLOR, MEET_COLOR, SUB_TEAM_COLORS } from '../lib/groups'
 import { formatTimeRange } from '../lib/week'
 import type { Occurrence, SubTeam } from '../types'
 import type { CSSProperties } from 'react'
+import { AddToCalendarButton } from './AddToCalendarButton'
 import { SessionKindIcon } from './SessionKindIcon'
 
 interface Props {
@@ -99,10 +100,19 @@ export function DayDetailSheet({
                 }
               >
                 <div className="day-sheet__card-top">
-                  <SessionKindIcon kind={kind} className="day-sheet__badge" />
-                  <span className="day-sheet__card-time">
-                    {formatTimeRange(occ.start, occ.end)}
-                  </span>
+                  <div className="day-sheet__card-meta">
+                    <SessionKindIcon kind={kind} className="day-sheet__badge" />
+                    <span className="day-sheet__card-time">
+                      {formatTimeRange(occ.start, occ.end)}
+                    </span>
+                  </div>
+                  <AddToCalendarButton
+                    occurrences={[occ]}
+                    compact
+                    label="Add to Calendar"
+                    calendarName="Delma Dolphins Schedule"
+                    className="day-sheet__cal"
+                  />
                 </div>
                 <h3 className="day-sheet__card-title">{occ.name}</h3>
                 <dl className="day-sheet__fields">
