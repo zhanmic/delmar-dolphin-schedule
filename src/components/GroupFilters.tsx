@@ -23,7 +23,7 @@ interface Props {
   eventFilter?: KindFilter | null
   /** When Query meets is on, show a separate Meet chip (not a group). */
   meetFilter?: KindFilter | null
-  /** Selected week sessions for the right-aligned Add to calendar control. */
+  /** Selected week sessions for the right-aligned Add to Calendar control. */
   weekCalendar?: {
     occurrences: Occurrence[]
     calendarName: string
@@ -163,7 +163,7 @@ export function GroupFilters({
             {weekCalendar ? (
               <AddToCalendarButton
                 occurrences={weekCalendar.occurrences}
-                label="Add to calendar"
+                label="Add to Calendar"
                 calendarName={weekCalendar.calendarName}
                 className="filters__cal"
               />

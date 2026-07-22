@@ -22,7 +22,7 @@ export function AddToCalendarButton({
 }: Props) {
   const [status, setStatus] = useState<string | null>(null)
   const disabled = occurrences.length === 0
-  const defaultLabel = 'Add to calendar'
+  const defaultLabel = 'Add to Calendar'
   const buttonLabel = label ?? defaultLabel
 
   useEffect(() => {
