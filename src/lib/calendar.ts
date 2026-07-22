@@ -1,38 +1,31 @@
+import { toZonedTime } from 'date-fns-tz'
 import type { Occurrence } from '../types'
+import { TEAM_TZ } from './week'
 
 function pad(value: number, size = 2): string {
   return String(value).padStart(size, '0')
 }
 
-/** Format a Date as UTC iCalendar datetime: 20260722T143000Z */
-export function formatIcsUtc(date: Date): string {
-  return (
-    `${date.getUTCFullYear()}${pad(date.getUTCMonth() + 1)}${pad(date.getUTCDate())}` +
-    `T${pad(date.getUTCHours())}${pad(date.getUTCMinutes())}${pad(date.getUTCSeconds())}Z`
-  )
-}
-
-/** Escape text for ICS property values. */
+/** Escape text for ICS property values (same rules as swim-carpool). */
 export function escapeIcsText(value: string): string {
   return value
     .replace(/\\/g, '\\\\')
-    .replace(/\n/g, '\\n')
-    .replace(/,/g, '\\,')
     .replace(/;/g, '\\;')
+    .replace(/,/g, '\\,')
+    .replace(/\n/g, '\\n')
 }
 
-function foldIcsLine(line: string): string {
-  // RFC 5545 recommends folding at 75 octets; keep it simple for ASCII-heavy content.
-  if (line.length <= 70) return line
-  const parts: string[] = []
-  let remaining = line
-  parts.push(remaining.slice(0, 70))
-  remaining = remaining.slice(70)
-  while (remaining.length > 0) {
-    parts.push(` ${remaining.slice(0, 69)}`)
-    remaining = remaining.slice(69)
-  }
-  return parts.join('\r\n')
+/** Local wall-clock datetime for TZID fields: 20260721T063000 */
+function formatIcsLocal(date: Date, timeZone: string): string {
+  const zoned = toZonedTime(date, timeZone)
+  return (
+    `${zoned.getFullYear()}${pad(zoned.getMonth() + 1)}${pad(zoned.getDate())}` +
+    `T${pad(zoned.getHours())}${pad(zoned.getMinutes())}${pad(zoned.getSeconds())}`
+  )
+}
+
+function formatIcsUtcStamp(date: Date): string {
+  return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z')
 }
 
 function sessionKindLabel(occ: Occurrence): string {
@@ -64,13 +57,17 @@ function occurrenceUid(occ: Occurrence): string {
   return `${occ.id}@delmar-dolphin-schedule`
 }
 
-export function buildIcsEvent(occ: Occurrence, now = new Date()): string {
+export function buildIcsEvent(
+  occ: Occurrence,
+  timeZone: string = TEAM_TZ,
+  now = new Date(),
+): string {
   const lines = [
     'BEGIN:VEVENT',
     `UID:${occurrenceUid(occ)}`,
-    `DTSTAMP:${formatIcsUtc(now)}`,
-    `DTSTART:${formatIcsUtc(occ.start)}`,
-    `DTEND:${formatIcsUtc(occ.end)}`,
+    `DTSTAMP:${formatIcsUtcStamp(now)}`,
+    `DTSTART;TZID=${timeZone}:${formatIcsLocal(occ.start, timeZone)}`,
+    `DTEND;TZID=${timeZone}:${formatIcsLocal(occ.end, timeZone)}`,
     `SUMMARY:${escapeIcsText(occurrenceSummary(occ))}`,
   ]
 
@@ -80,40 +77,41 @@ export function buildIcsEvent(occ: Occurrence, now = new Date()): string {
 
   lines.push(`DESCRIPTION:${escapeIcsText(occurrenceDescription(occ))}`)
   lines.push('END:VEVENT')
-  return lines.map(foldIcsLine).join('\r\n')
+  return lines.join('\r\n')
 }
 
 export function buildIcsCalendar(
   occurrences: Occurrence[],
   calendarName = 'Delma Dolphins Schedule',
+  timeZone: string = TEAM_TZ,
 ): string {
   const now = new Date()
   const events = occurrences
     .slice()
     .sort((a, b) => a.start.getTime() - b.start.getTime())
-    .map((occ) => buildIcsEvent(occ, now))
+    .map((occ) => buildIcsEvent(occ, timeZone, now))
     .join('\r\n')
 
-  const header = [
+  return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'PRODID:-//Delmar Dolphins//Schedule//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     `X-WR-CALNAME:${escapeIcsText(calendarName)}`,
-  ]
-    .map(foldIcsLine)
-    .join('\r\n')
-
-  return `${header}\r\n${events}\r\nEND:VCALENDAR\r\n`
+    events,
+    'END:VCALENDAR',
+  ].join('\r\n')
 }
 
 function slugifyFilename(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-    .slice(0, 48) || 'session'
+  return (
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 48) || 'session'
+  )
 }
 
 export function calendarFilenameForOccurrences(
@@ -125,85 +123,35 @@ export function calendarFilenameForOccurrences(
   return `delmar-week-${occurrences.length}-sessions.ics`
 }
 
-function isAppleTouchDevice(): boolean {
-  if (typeof navigator === 'undefined') return false
-  const ua = navigator.userAgent
-  if (/iPad|iPhone|iPod/i.test(ua)) return true
-  // iPadOS 13+ desktop UA with touch
-  return navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1
-}
-
 /**
- * On iPhone/iPad Safari, open the .ics so the native “Add to Calendar”
- * sheet appears. Avoid the `download` attribute — that only saves a file.
+ * Same trigger used by swim-carpool: create a text/calendar blob and click a
+ * temporary download link. On iPhone Safari this opens the Quick Look sheet
+ * with the “Add To Calendar” button (not a silent Files save when MIME is set).
  */
-function openIcsInAppleCalendar(ics: string): boolean {
-  // Safari treats an inline text/calendar data URL as “Add to Calendar”.
-  const dataUrl =
-    'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics)
-
-  // Same-tab handoff is the reliable path on iOS Safari: it surfaces the
-  // system Add to Calendar sheet. User returns with Back.
-  window.location.assign(dataUrl)
-  return true
-}
-
-function downloadIcsFile(ics: string, filename: string): void {
-  const url = URL.createObjectURL(
-    new Blob([ics], { type: 'text/calendar;charset=utf-8' }),
-  )
-  const anchor = document.createElement('a')
-  anchor.href = url
-  anchor.download = filename
-  anchor.rel = 'noopener'
-  document.body.appendChild(anchor)
-  anchor.click()
-  anchor.remove()
-  window.setTimeout(() => URL.revokeObjectURL(url), 2000)
+export function downloadCalendarEvent(icsContent: string, filename: string): void {
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
 }
 
 /**
- * Offer an .ics calendar to the user.
- * - iPhone/iPad: open inline so Safari shows Add to Calendar (not a download)
- * - Other browsers: share sheet with file when available, else download
+ * Offer an .ics calendar to the user (matches swim-carpool behavior).
  */
 export async function offerCalendarFile(
   occurrences: Occurrence[],
   calendarName = 'Delma Dolphins Schedule',
-): Promise<'opened' | 'shared' | 'downloaded' | 'cancelled' | 'empty'> {
+  timeZone: string = TEAM_TZ,
+): Promise<'downloaded' | 'empty'> {
   if (occurrences.length === 0) return 'empty'
 
-  const ics = buildIcsCalendar(occurrences, calendarName)
+  const ics = buildIcsCalendar(occurrences, calendarName, timeZone)
   const filename = calendarFilenameForOccurrences(occurrences)
-
-  if (isAppleTouchDevice()) {
-    openIcsInAppleCalendar(ics)
-    return 'opened'
-  }
-
-  const file = new File([ics], filename, { type: 'text/calendar' })
-
-  try {
-    if (
-      typeof navigator.canShare === 'function' &&
-      navigator.canShare({ files: [file] })
-    ) {
-      await navigator.share({
-        files: [file],
-        title: calendarName,
-        text:
-          occurrences.length === 1
-            ? occurrenceSummary(occurrences[0])
-            : `${occurrences.length} sessions from Delma Dolphins Schedule`,
-      })
-      return 'shared'
-    }
-  } catch (err) {
-    if (err instanceof DOMException && err.name === 'AbortError') {
-      return 'cancelled'
-    }
-  }
-
-  downloadIcsFile(ics, filename)
+  downloadCalendarEvent(ics, filename)
   return 'downloaded'
 }

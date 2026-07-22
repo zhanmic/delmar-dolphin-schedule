@@ -38,9 +38,7 @@ export function AddToCalendarButton({
     if (disabled) return
 
     const result = await offerCalendarFile(occurrences, calendarName)
-    if (result === 'opened') setStatus('Opening Calendar…')
-    else if (result === 'shared') setStatus('Shared')
-    else if (result === 'downloaded') setStatus('Calendar file ready')
+    if (result === 'downloaded') setStatus('Opening Calendar…')
     else if (result === 'empty') setStatus('Nothing to add')
   }
 
