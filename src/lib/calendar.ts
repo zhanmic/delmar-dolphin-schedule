@@ -123,10 +123,23 @@ export function calendarFilenameForOccurrences(
   return `delmar-week-${occurrences.length}-sessions.ics`
 }
 
+function toBase64Url(value: string): string {
+  const bytes = new TextEncoder().encode(value)
+  let binary = ''
+  for (const byte of bytes) binary += String.fromCharCode(byte)
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+}
+
+function isAppleTouchDevice(): boolean {
+  if (typeof navigator === 'undefined') return false
+  const ua = navigator.userAgent
+  if (/iPad|iPhone|iPod/i.test(ua)) return true
+  return navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1
+}
+
 /**
- * Same trigger used by swim-carpool: create a text/calendar blob and click a
- * temporary download link. On iPhone Safari this opens the Quick Look sheet
- * with the “Add To Calendar” button (not a silent Files save when MIME is set).
+ * Blob download (same pattern as swim-carpool). Used as desktop fallback and
+ * when the ICS is too large for the inline API URL.
  */
 export function downloadCalendarEvent(icsContent: string, filename: string): void {
   const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' })
@@ -141,17 +154,37 @@ export function downloadCalendarEvent(icsContent: string, filename: string): voi
 }
 
 /**
- * Offer an .ics calendar to the user (matches swim-carpool behavior).
+ * Open a server-served inline .ics URL so iPhone Safari shows Quick Look
+ * with the native “Add To Calendar” button.
+ */
+function openInlineCalendarApi(ics: string): boolean {
+  const encoded = toBase64Url(ics)
+  // Keep well under typical mobile URL limits.
+  if (encoded.length > 6000) return false
+  const url = `/api/calendar?d=${encoded}`
+  window.location.assign(url)
+  return true
+}
+
+/**
+ * Offer an .ics calendar to the user.
+ * On iPhone, prefer an inline HTTPS .ics response (Quick Look + Add To Calendar).
+ * Otherwise use the carpool-style blob download.
  */
 export async function offerCalendarFile(
   occurrences: Occurrence[],
   calendarName = 'Delma Dolphins Schedule',
   timeZone: string = TEAM_TZ,
-): Promise<'downloaded' | 'empty'> {
+): Promise<'opened' | 'downloaded' | 'empty'> {
   if (occurrences.length === 0) return 'empty'
 
   const ics = buildIcsCalendar(occurrences, calendarName, timeZone)
   const filename = calendarFilenameForOccurrences(occurrences)
+
+  if (isAppleTouchDevice() && openInlineCalendarApi(ics)) {
+    return 'opened'
+  }
+
   downloadCalendarEvent(ics, filename)
   return 'downloaded'
 }
