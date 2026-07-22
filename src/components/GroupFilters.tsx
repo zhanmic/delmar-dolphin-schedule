@@ -5,7 +5,8 @@ import {
   SUB_TEAM_COLORS,
   SUB_TEAM_ORDER,
 } from '../lib/groups'
-import type { SubTeam } from '../types'
+import type { Occurrence, SubTeam } from '../types'
+import { AddToCalendarButton } from './AddToCalendarButton'
 
 interface KindFilter {
   count: number
@@ -22,6 +23,11 @@ interface Props {
   eventFilter?: KindFilter | null
   /** When Query meets is on, show a separate Meet chip (not a group). */
   meetFilter?: KindFilter | null
+  /** Selected week sessions for the right-aligned Add week to Calendar control. */
+  weekCalendar?: {
+    occurrences: Occurrence[]
+    calendarName: string
+  } | null
 }
 
 export function GroupFilters({
@@ -31,9 +37,11 @@ export function GroupFilters({
   counts,
   eventFilter = null,
   meetFilter = null,
+  weekCalendar = null,
 }: Props) {
   const teams = SUB_TEAM_ORDER.filter((t) => available.includes(t))
   const hasKindFilters = Boolean(eventFilter || meetFilter)
+  const showKindsRow = hasKindFilters || Boolean(weekCalendar)
 
   function toggle(team: SubTeam) {
     const next = new Set(selected)
@@ -100,11 +108,11 @@ export function GroupFilters({
           </div>
         </div>
 
-        {hasKindFilters ? (
+        {showKindsRow ? (
           <div
             className="filters__row filters__row--kinds"
             role="group"
-            aria-label="Events and meets"
+            aria-label="Events, meets, and calendar"
           >
             <div className="filters__list">
               {eventFilter ? (
@@ -151,6 +159,15 @@ export function GroupFilters({
                 </button>
               ) : null}
             </div>
+
+            {weekCalendar ? (
+              <AddToCalendarButton
+                occurrences={weekCalendar.occurrences}
+                label="Add week to Calendar"
+                calendarName={weekCalendar.calendarName}
+                className="filters__cal"
+              />
+            ) : null}
           </div>
         ) : null}
       </div>

@@ -239,6 +239,10 @@ export default function App() {
                     }
                   : null
               }
+              weekCalendar={{
+                occurrences: filtered,
+                calendarName: `Delma Dolphins · ${week.label}`,
+              }}
             />
 
             {filtered.length === 0 ? (

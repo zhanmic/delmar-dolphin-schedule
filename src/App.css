@@ -479,12 +479,6 @@
   color: var(--ink);
 }
 
-.week-tools {
-  display: flex;
-  justify-content: flex-end;
-  margin: -0.25rem 0 0.85rem;
-}
-
 .cal-btn-wrap {
   position: relative;
   display: inline-flex;
@@ -643,6 +637,20 @@
   align-items: center;
   gap: 0.55rem;
   min-width: 0;
+}
+
+.filters__row--kinds {
+  justify-content: space-between;
+  gap: 0.65rem;
+}
+
+.filters__row--kinds .filters__list {
+  flex: 1 1 auto;
+}
+
+.filters__cal {
+  flex: 0 0 auto;
+  margin-left: auto;
 }
 
 .filters__row-label {
@@ -1634,16 +1642,22 @@
     font-size: 0.95rem;
   }
 
-  .app--fit .week-tools {
-    justify-content: stretch;
-    margin: 0.15rem 0 0.55rem;
-    flex-shrink: 0;
+  .app--fit .filters__row--kinds {
+    flex-wrap: nowrap;
+    align-items: center;
   }
 
-  .app--fit .week-tools .cal-btn {
-    width: 100%;
+  .app--fit .filters__cal .cal-btn {
     min-height: 2.1rem;
-    font-size: 0.82rem;
+    padding: 0.28rem 0.65rem;
+    font-size: 0.75rem;
+  }
+
+  .app--fit .filters__cal .cal-btn__label {
+    max-width: 6.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .app--fit .nav-btn {
