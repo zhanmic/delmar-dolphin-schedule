@@ -139,27 +139,11 @@ function isAppleTouchDevice(): boolean {
  */
 function openIcsInAppleCalendar(ics: string): boolean {
   // Safari treats an inline text/calendar data URL as “Add to Calendar”.
-  // encodeURIComponent keeps newlines/commas valid in the URL.
   const dataUrl =
     'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics)
 
-  // Hidden iframe keeps the schedule page in place while Safari
-  // hands the calendar file to the system Add sheet.
-  try {
-    const frame = document.createElement('iframe')
-    frame.style.display = 'none'
-    frame.setAttribute('aria-hidden', 'true')
-    frame.src = dataUrl
-    document.body.appendChild(frame)
-    window.setTimeout(() => {
-      frame.remove()
-    }, 4000)
-    return true
-  } catch {
-    // Fall through to navigation handoff.
-  }
-
-  // Same-tab handoff — Calendar sheet still appears; Back returns here.
+  // Same-tab handoff is the reliable path on iOS Safari: it surfaces the
+  // system Add to Calendar sheet. User returns with Back.
   window.location.assign(dataUrl)
   return true
 }
