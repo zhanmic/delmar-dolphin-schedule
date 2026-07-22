@@ -9,6 +9,7 @@ import {
 } from '../lib/week'
 import type { Occurrence, SubTeam } from '../types'
 import { DayDetailSheet } from './DayDetailSheet'
+import { AddToCalendarButton } from './AddToCalendarButton'
 import { ScrollableName } from './ScrollableName'
 import { SessionKindIcon } from './SessionKindIcon'
 
@@ -99,6 +100,13 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
 
     return (
       <>
+        <div className="week-tools">
+          <AddToCalendarButton
+            occurrences={occurrences}
+            label="Add week to Calendar"
+            calendarName={`Delma Dolphins · ${week.label}`}
+          />
+        </div>
         <div className="week-list week-list--fit" role="list">
           {dayGroups.map((group) => (
             <section
@@ -201,6 +209,13 @@ export function WeekSchedule({ week, occurrences, fitMode = false }: Props) {
 
   return (
     <>
+      <div className="week-tools">
+        <AddToCalendarButton
+          occurrences={occurrences}
+          label="Add week to Calendar"
+          calendarName={`Delma Dolphins · ${week.label}`}
+        />
+      </div>
       <div className="week-grid" role="list">
         {week.days.map((day) => {
           const heading = dayHeading(day)
